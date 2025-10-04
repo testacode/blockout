@@ -1,0 +1,235 @@
+/* Touch Controls - Virtual buttons for mobile devices */
+/* Hidden by default, shown only on mobile via media queries */
+
+.touch-controls {
+  display: none; /* Hidden by default, shown on mobile */
+  width: 100%;
+  padding: 20px;
+  background: rgba(10, 10, 10, 0.9);
+  border-top: 2px solid #00ffff;
+}
+
+.touch-controls-layout {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* D-Pad Container */
+.dpad-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.dpad {
+  display: grid;
+  grid-template-columns: repeat(3, 60px);
+  grid-template-rows: repeat(3, 60px);
+  gap: 4px;
+}
+
+.dpad-btn {
+  width: 60px;
+  height: 60px;
+  background: rgba(0, 255, 255, 0.1);
+  border: 2px solid #00ffff;
+  color: #00ffff;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: all 0.1s ease;
+}
+
+.dpad-btn:active,
+.dpad-btn.pressed {
+  background: rgba(0, 255, 255, 0.3);
+  transform: scale(0.95);
+  box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.dpad-center {
+  opacity: 0.3;
+  cursor: default;
+  pointer-events: none;
+}
+
+.dpad-up {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.dpad-left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.dpad-right {
+  grid-column: 3;
+  grid-row: 2;
+}
+
+.dpad-down {
+  grid-column: 2;
+  grid-row: 3;
+}
+
+.dpad-label,
+.rotate-label {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #00ffff;
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+/* Action Buttons */
+.action-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.rotate-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.action-btn {
+  background: rgba(0, 255, 255, 0.1);
+  border: 2px solid #00ffff;
+  color: #00ffff;
+  font-family: 'Courier New', monospace;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  transition: all 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.action-btn:active,
+.action-btn.pressed {
+  background: rgba(0, 255, 255, 0.3);
+  transform: scale(0.95);
+  box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.rotate-btn {
+  width: 50px;
+  height: 50px;
+  font-size: 18px;
+}
+
+.drop-btn {
+  width: 160px;
+  height: 60px;
+  font-size: 20px;
+  letter-spacing: 3px;
+  background: rgba(255, 0, 0, 0.1);
+  border-color: #ff0000;
+  color: #ff0000;
+}
+
+.drop-btn:active,
+.drop-btn.pressed {
+  background: rgba(255, 0, 0, 0.3);
+  box-shadow: inset 0 0 10px rgba(255, 0, 0, 0.5);
+}
+
+.pause-btn {
+  width: 50px;
+  height: 50px;
+  font-size: 24px;
+  background: rgba(255, 255, 0, 0.1);
+  border-color: #ffff00;
+  color: #ffff00;
+}
+
+.pause-btn:active,
+.pause-btn.pressed {
+  background: rgba(255, 255, 0, 0.3);
+  box-shadow: inset 0 0 10px rgba(255, 255, 0, 0.5);
+}
+
+/* Ensure buttons are touch-friendly (minimum 44x44px recommended) */
+.btn-icon,
+.btn-label {
+  pointer-events: none; /* Prevent event bubbling issues */
+}
+
+/* Mobile-specific styles */
+@media (max-width: 768px) {
+  .touch-controls {
+    display: block;
+  }
+
+  /* Adjust keyboard controls hint visibility */
+  .controls-hint {
+    display: none;
+  }
+}
+
+/* Portrait mode - stack vertically */
+@media (max-width: 768px) and (orientation: portrait) {
+  .touch-controls-layout {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .dpad,
+  .action-buttons {
+    width: 100%;
+  }
+}
+
+/* Landscape mode - side by side (already default) */
+@media (max-width: 768px) and (orientation: landscape) {
+  .touch-controls {
+    padding: 10px;
+  }
+
+  .dpad {
+    grid-template-columns: repeat(3, 50px);
+    grid-template-rows: repeat(3, 50px);
+  }
+
+  .dpad-btn {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+
+  .rotate-btn {
+    width: 45px;
+    height: 45px;
+    font-size: 16px;
+  }
+
+  .drop-btn {
+    width: 140px;
+    height: 50px;
+    font-size: 18px;
+  }
+
+  .pause-btn {
+    width: 45px;
+    height: 45px;
+    font-size: 20px;
+  }
+}

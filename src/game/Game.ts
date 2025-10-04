@@ -1,6 +1,7 @@
 import { Renderer } from './Renderer';
 import { Well } from './Well';
 import { Controls } from './Controls';
+import { TouchControls, isMobileDevice } from './TouchControls';
 import { GameUI } from '../ui/GameUI';
 import { AudioManager } from '../audio/AudioManager';
 import { createRandomPiece } from './Piece';
@@ -15,6 +16,7 @@ export class Game {
   private renderer: Renderer;
   private well: Well;
   private controls: Controls;
+  private touchControls: TouchControls | null = null;
   private gameUI: GameUI;
   private audioManager: AudioManager;
   private state: GameState;
@@ -43,13 +45,32 @@ export class Game {
     // Initialize game well
     this.well = new Well(this.renderer.getScene());
 
-    // Initialize controls
+    // Initialize controls (keyboard)
     this.controls = new Controls();
     this.controls.setActionHandler(this.handleAction.bind(this));
+
+    // Initialize touch controls if on mobile device
+    if (isMobileDevice()) {
+      console.debug('[Game] Mobile device detected, initializing touch controls');
+      this.touchControls = new TouchControls();
+      this.touchControls.setActionHandler(this.handleAction.bind(this));
+
+      // Mount touch controls to the wrapper (after UI is created)
+      // We'll do this after GameUI is created
+    }
 
     // Initialize UI
     this.gameUI = new GameUI();
     this.gameUI.setGame(this);
+
+    // Mount touch controls if they exist
+    if (this.touchControls) {
+      const gameWrapper = document.getElementById('game-wrapper');
+      if (gameWrapper) {
+        this.touchControls.mount(gameWrapper);
+        this.touchControls.show();
+      }
+    }
 
     // Initialize audio (stub for now)
     this.audioManager = new AudioManager();
@@ -167,6 +188,11 @@ export class Game {
       this.animationFrameId = null;
     }
     this.controls.disable();
+
+    if (this.touchControls) {
+      this.touchControls.dispose();
+    }
+
     this.gameUI.dispose();
     this.renderer.dispose();
   }

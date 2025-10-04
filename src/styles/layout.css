@@ -62,3 +62,69 @@ canvas {
 .game-over-overlay.hidden {
   display: none;
 }
+
+/* Responsive Mobile Layout */
+@media (max-width: 768px) {
+  body {
+    overflow: auto; /* Allow scrolling on mobile if needed */
+  }
+
+  #game-wrapper {
+    flex-direction: column;
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    min-height: 100vh;
+    gap: 0;
+    padding: 0;
+  }
+
+  #app {
+    width: 100vw;
+    height: 100vw; /* Square aspect ratio */
+    max-height: 70vh; /* Don't take up entire screen */
+    flex-shrink: 0;
+  }
+
+  #game-ui {
+    width: 100%;
+    padding: 10px;
+  }
+
+  .game-over-overlay {
+    left: 50%; /* Center properly on mobile */
+    font-size: 28px;
+    padding: 20px 40px;
+  }
+}
+
+/* Portrait mode - vertical stack */
+@media (max-width: 768px) and (orientation: portrait) {
+  #app {
+    height: 100vw;
+    max-height: 60vh;
+  }
+}
+
+/* Landscape mode - more compact */
+@media (max-width: 768px) and (orientation: landscape) {
+  #game-wrapper {
+    flex-direction: row;
+    height: 100vh;
+  }
+
+  #app {
+    width: 50vw;
+    height: 100vh;
+  }
+
+  #game-ui {
+    width: 25vw;
+    max-width: 200px;
+  }
+
+  .game-over-overlay {
+    font-size: 24px;
+    padding: 15px 30px;
+  }
+}
