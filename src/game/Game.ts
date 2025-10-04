@@ -380,7 +380,7 @@ export class Game {
   }
 
   private movePiece(offset: Vector3): void {
-    if (!this.state.currentPiece || this.state.isPaused) {
+    if (!this.state.currentPiece || this.state.isPaused || this.state.gameOver) {
       return
     }
 
@@ -396,7 +396,7 @@ export class Game {
   }
 
   private rotatePiece(axis: 'x' | 'y' | 'z', direction: number): void {
-    if (!this.state.currentPiece || this.state.isPaused) {
+    if (!this.state.currentPiece || this.state.isPaused || this.state.gameOver) {
       console.debug('[Game] Rotation blocked: no piece or paused')
       return
     }
@@ -426,7 +426,7 @@ export class Game {
   }
 
   private fastDrop(): void {
-    if (!this.state.currentPiece || this.state.isPaused) {
+    if (!this.state.currentPiece || this.state.isPaused || this.state.gameOver) {
       return
     }
 
