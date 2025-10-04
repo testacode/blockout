@@ -39,9 +39,9 @@ export class Well {
       new THREE.BoxGeometry(width, height, depth)
     )
 
-    // Cyan wireframe material
+    // White wireframe material
     const material = new THREE.LineBasicMaterial({
-      color: 0x00ffff,
+      color: 0xffffff,
       transparent: true,
       opacity: 0.6
     })
@@ -94,11 +94,11 @@ export class Well {
     const geometry = new THREE.BufferGeometry()
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3))
 
-    // Semi-transparent white grid material
+    // Semi-transparent green grid material (Matrix style)
     const material = new THREE.LineBasicMaterial({
-      color: 0xffffff,
+      color: 0x00ff00,
       transparent: true,
-      opacity: 0.15
+      opacity: 0.2
     })
 
     return new THREE.LineSegments(geometry, material)
