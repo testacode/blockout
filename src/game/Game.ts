@@ -3,6 +3,8 @@ import { Well } from './Well';
 import { Controls } from './Controls';
 import { TouchControls, isMobileDevice } from './TouchControls';
 import { GameUI } from '../ui/GameUI';
+import { MobileUI } from '../ui/MobileUI';
+import type { IGameUI } from '../ui/GameUIInterface';
 import { AudioManager } from '../audio/AudioManager';
 import { createRandomPiece } from './Piece';
 import { wouldCollide, addVector3 } from '../utils/collision';
@@ -17,7 +19,7 @@ export class Game {
   private well: Well;
   private controls: Controls;
   private touchControls: TouchControls | null = null;
-  private gameUI: GameUI;
+  private gameUI: IGameUI;
   private audioManager: AudioManager;
   private state: GameState;
   private lastTime: number = 0;
@@ -49,28 +51,29 @@ export class Game {
     this.controls = new Controls();
     this.controls.setActionHandler(this.handleAction.bind(this));
 
-    // Initialize touch controls if on mobile device
-    if (isMobileDevice()) {
-      console.debug('[Game] Mobile device detected, initializing touch controls');
+    // Initialize UI based on device type
+    const isMobile = isMobileDevice();
+
+    if (isMobile) {
+      console.debug('[Game] Mobile device detected, using MobileUI');
+      this.gameUI = new MobileUI();
+
+      // Initialize touch controls for mobile
       this.touchControls = new TouchControls();
       this.touchControls.setActionHandler(this.handleAction.bind(this));
 
-      // Mount touch controls to the wrapper (after UI is created)
-      // We'll do this after GameUI is created
-    }
-
-    // Initialize UI
-    this.gameUI = new GameUI();
-    this.gameUI.setGame(this);
-
-    // Mount touch controls if they exist
-    if (this.touchControls) {
+      // Mount touch controls to the wrapper
       const gameWrapper = document.getElementById('game-wrapper');
       if (gameWrapper) {
         this.touchControls.mount(gameWrapper);
         this.touchControls.show();
       }
+    } else {
+      console.debug('[Game] Desktop device detected, using GameUI');
+      this.gameUI = new GameUI();
     }
+
+    this.gameUI.setGame(this);
 
     // Initialize audio (stub for now)
     this.audioManager = new AudioManager();

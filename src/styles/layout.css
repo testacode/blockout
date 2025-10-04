@@ -66,29 +66,38 @@ canvas {
 /* Responsive Mobile Layout */
 @media (max-width: 768px) {
   body {
-    overflow: auto; /* Allow scrolling on mobile if needed */
+    overflow: hidden;
+  }
+
+  /* Hide desktop UI panel on mobile */
+  .ui-panel {
+    display: none;
   }
 
   #game-wrapper {
     flex-direction: column;
-    width: 100%;
-    max-width: 100%;
-    height: auto;
-    min-height: 100vh;
+    width: 100vw;
+    height: 100vh;
     gap: 0;
     padding: 0;
+    align-items: stretch;
   }
 
+  /* Canvas takes 50% height, positioned below header */
   #app {
     width: 100vw;
-    height: 100vw; /* Square aspect ratio */
-    max-height: 70vh; /* Don't take up entire screen */
+    height: 50vh;
+    margin-top: 50px; /* Space for fixed header */
     flex-shrink: 0;
   }
 
-  #game-ui {
-    width: 100%;
-    padding: 10px;
+  /* Touch controls take bottom 45% */
+  .touch-controls {
+    height: 45vh;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
 
   .game-over-overlay {
@@ -98,15 +107,18 @@ canvas {
   }
 }
 
-/* Portrait mode - vertical stack */
+/* Portrait mode optimizations */
 @media (max-width: 768px) and (orientation: portrait) {
   #app {
-    height: 100vw;
-    max-height: 60vh;
+    height: 48vh;
+  }
+
+  .touch-controls {
+    height: 47vh;
   }
 }
 
-/* Landscape mode - more compact */
+/* Landscape mode - side by side layout */
 @media (max-width: 768px) and (orientation: landscape) {
   #game-wrapper {
     flex-direction: row;
@@ -114,13 +126,20 @@ canvas {
   }
 
   #app {
-    width: 50vw;
+    width: 55vw;
     height: 100vh;
+    margin-top: 0;
   }
 
-  #game-ui {
-    width: 25vw;
-    max-width: 200px;
+  .touch-controls {
+    width: 45vw;
+    height: 100vh;
+    position: relative;
+    bottom: auto;
+  }
+
+  .mobile-header {
+    width: 55vw;
   }
 
   .game-over-overlay {

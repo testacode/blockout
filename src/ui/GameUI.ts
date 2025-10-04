@@ -1,10 +1,12 @@
 // GameUI - Display game stats and information
 // Updates from GameState
+// Desktop version - uses side panel layout
 
 import type { GameState, Piece3D } from '../types';
 import type { Game } from '../game/Game';
+import type { IGameUI } from './GameUIInterface';
 
-export class GameUI {
+export class GameUI implements IGameUI {
   private wrapper: HTMLElement;
   private container: HTMLElement;
   private scoreElement: HTMLElement;
