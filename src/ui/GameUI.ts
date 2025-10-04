@@ -33,26 +33,26 @@ export class GameUI {
     panel.id = 'game-ui'
     panel.innerHTML = `
       <div class="ui-panel">
-        <h1>BLOCKOUT</h1>
+        <h1 class="game-title">BLOCK<br>OUT</h1>
 
         <div class="stat-group">
           <div class="stat-label">SCORE</div>
           <div class="stat-value" id="game-score">0</div>
         </div>
 
-        <div class="stat-group">
+        <div class="stat-group stat-group-highlight">
           <div class="stat-label">HIGH SCORE</div>
-          <div class="stat-value stat-value-highlight" id="game-highscore">0</div>
+          <div class="stat-value stat-value-large" id="game-highscore">0</div>
         </div>
 
-        <div class="stat-group">
-          <div class="stat-label">LINES</div>
-          <div class="stat-value" id="game-lines">0</div>
+        <div class="stat-group stat-group-secondary">
+          <div class="stat-label-small">LINES</div>
+          <div class="stat-value-small" id="game-lines">0</div>
         </div>
 
-        <div class="stat-group">
-          <div class="stat-label">LEVEL</div>
-          <div class="stat-value" id="game-level">1</div>
+        <div class="stat-group stat-group-secondary">
+          <div class="stat-label-small">LEVEL</div>
+          <div class="stat-value-small" id="game-level">1</div>
         </div>
 
         <div class="stat-group">
@@ -65,14 +65,9 @@ export class GameUI {
         </div>
 
         <div class="controls-hint">
-          <div class="hint-title">CONTROLS</div>
-          <div class="hint-item">Arrows: Move</div>
-          <div class="hint-item">Q/W: Rotate X</div>
-          <div class="hint-item">A/S: Rotate Y</div>
-          <div class="hint-item">Z/X: Rotate Z</div>
-          <div class="hint-item">Space: Drop</div>
-          <div class="hint-item">P: Pause</div>
-          <div class="hint-item">R: Restart</div>
+          <div class="hint-item">↑↓←→: Move</div>
+          <div class="hint-item">Q/W/A/S/Z/X: Rotate</div>
+          <div class="hint-item">Space: Drop | P: Pause | R: Restart</div>
         </div>
       </div>
     `
