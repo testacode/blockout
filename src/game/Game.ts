@@ -1,5 +1,6 @@
 import { Renderer } from './Renderer'
 import { Well } from './Well'
+import { Controls } from './Controls'
 import { AudioManager } from '../audio/AudioManager'
 import { createRandomPiece } from './Piece'
 import { wouldCollide, addVector3 } from '../utils/collision'
@@ -11,6 +12,7 @@ import type { GameState, Vector3 } from '../types'
 export class Game {
   private renderer: Renderer
   private well: Well
+  private controls: Controls
   private audioManager: AudioManager
   private state: GameState
   private lastTime: number = 0
@@ -23,6 +25,10 @@ export class Game {
 
     // Initialize game well
     this.well = new Well(this.renderer.getScene())
+
+    // Initialize controls
+    this.controls = new Controls()
+    this.controls.setActionHandler(this.handleAction.bind(this))
 
     // Initialize audio (stub for now)
     this.audioManager = new AudioManager()
@@ -47,6 +53,7 @@ export class Game {
 
   start(): void {
     this.spawnPiece()
+    this.controls.enable()
     this.lastTime = performance.now()
     this.gameLoop()
   }
@@ -123,6 +130,7 @@ export class Game {
       cancelAnimationFrame(this.animationFrameId)
       this.animationFrameId = null
     }
+    this.controls.disable()
     this.renderer.dispose()
   }
 
@@ -161,5 +169,65 @@ export class Game {
 
     // Clear current piece
     this.state.currentPiece = null
+  }
+
+  private handleAction(action: { type: string, offset?: Vector3 }): void {
+    if (this.state.gameOver) {
+      return
+    }
+
+    switch (action.type) {
+      case 'move':
+        if (action.offset) {
+          this.movePiece(action.offset)
+        }
+        break
+      case 'fastDrop':
+        this.fastDrop()
+        break
+      case 'pause':
+        if (this.state.isPaused) {
+          this.resume()
+        } else {
+          this.pause()
+        }
+        break
+    }
+  }
+
+  private movePiece(offset: Vector3): void {
+    if (!this.state.currentPiece || this.state.isPaused) {
+      return
+    }
+
+    // Check if move is valid
+    if (!wouldCollide(this.state.currentPiece, this.state.well, offset)) {
+      this.state.currentPiece.position = addVector3(
+        this.state.currentPiece.position,
+        offset
+      )
+      this.renderer.updateCurrentPiece(this.state.currentPiece)
+    }
+  }
+
+  private fastDrop(): void {
+    if (!this.state.currentPiece || this.state.isPaused) {
+      return
+    }
+
+    const downOffset: Vector3 = { x: 0, y: -1, z: 0 }
+
+    // Drop piece until it collides
+    while (!wouldCollide(this.state.currentPiece, this.state.well, downOffset)) {
+      this.state.currentPiece.position = addVector3(
+        this.state.currentPiece.position,
+        downOffset
+      )
+    }
+
+    // Update visual and lock piece
+    this.renderer.updateCurrentPiece(this.state.currentPiece)
+    this.lockPiece()
+    this.spawnPiece()
   }
 }
