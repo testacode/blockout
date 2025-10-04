@@ -21,7 +21,10 @@ export class GameUI {
     this.linesElement = document.getElementById('game-lines')!
     this.levelElement = document.getElementById('game-level')!
     this.highScoreElement = document.getElementById('game-highscore')!
-    this.gameOverElement = document.getElementById('game-over')!
+
+    // Create game over overlay separately
+    this.gameOverElement = this.createGameOverOverlay()
+    document.body.appendChild(this.gameOverElement)
   }
 
   setGame(game: Game): void {
@@ -60,10 +63,6 @@ export class GameUI {
           <div class="stat-value">5×5×10</div>
         </div>
 
-        <div id="game-over" class="game-over hidden">
-          GAME OVER
-        </div>
-
         <div class="controls-hint">
           <div class="hint-item">↑↓←→: Move</div>
           <div class="hint-item">Q/W/A/S/Z/X: Rotate</div>
@@ -72,6 +71,14 @@ export class GameUI {
       </div>
     `
     return panel
+  }
+
+  private createGameOverOverlay(): HTMLElement {
+    const overlay = document.createElement('div')
+    overlay.id = 'game-over-overlay'
+    overlay.className = 'game-over-overlay hidden'
+    overlay.innerHTML = 'GAME OVER'
+    return overlay
   }
 
   update(state: GameState): void {
@@ -93,5 +100,6 @@ export class GameUI {
 
   dispose(): void {
     this.container.remove()
+    this.gameOverElement.remove()
   }
 }
