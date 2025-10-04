@@ -131,9 +131,19 @@ export class Game {
         // Update visual representation
         this.renderer.updateCurrentPiece(this.state.currentPiece)
       } else {
-        // Piece has landed - lock it and spawn new piece
-        this.lockPiece()
-        this.spawnPiece()
+        // Piece has landed - check if spawning would cause game over
+        const nextPiece = this.state.nextPiece || createRandomPiece(this.state.well.height)
+
+        if (wouldCollide(nextPiece, this.state.well, { x: 0, y: 0, z: 0 })) {
+          // Game over - lock without sound and mark game over
+          this.lockPiece(false)
+          this.state.gameOver = true
+          console.log('Game Over!')
+        } else {
+          // Normal flow - lock with sound and spawn new piece
+          this.lockPiece()
+          this.spawnPiece()
+        }
       }
     }
 
@@ -203,7 +213,7 @@ export class Game {
     this.state.nextPiece = createRandomPiece(this.state.well.height)
   }
 
-  private lockPiece(): void {
+  private lockPiece(playSound: boolean = true): void {
     if (!this.state.currentPiece) {
       return
     }
@@ -222,8 +232,10 @@ export class Game {
     // Update renderer to show locked blocks
     this.renderer.updateOccupiedBlocks(this.state.well)
 
-    // Play lock sound
-    this.audioManager.playPieceLock()
+    // Play lock sound (unless silenced for game over)
+    if (playSound) {
+      this.audioManager.playPieceLock()
+    }
 
     // Clear current piece
     this.state.currentPiece = null
@@ -440,9 +452,20 @@ export class Game {
       )
     }
 
-    // Update visual and lock piece
+    // Update visual and check if spawning would cause game over
     this.renderer.updateCurrentPiece(this.state.currentPiece)
-    this.lockPiece()
-    this.spawnPiece()
+
+    const nextPiece = this.state.nextPiece || createRandomPiece(this.state.well.height)
+
+    if (wouldCollide(nextPiece, this.state.well, { x: 0, y: 0, z: 0 })) {
+      // Game over - lock without sound and mark game over
+      this.lockPiece(false)
+      this.state.gameOver = true
+      console.log('Game Over!')
+    } else {
+      // Normal flow - lock with sound and spawn new piece
+      this.lockPiece()
+      this.spawnPiece()
+    }
   }
 }
