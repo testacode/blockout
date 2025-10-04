@@ -8,6 +8,7 @@ import type { GameWell } from '../types'
 export class Well {
   private wellData: GameWell
   private wellMesh: THREE.LineSegments
+  private gridMesh: THREE.LineSegments
 
   constructor(scene: THREE.Scene) {
     // Initialize well data
@@ -21,6 +22,10 @@ export class Well {
     // Create wireframe visualization
     this.wellMesh = this.createWireframe()
     scene.add(this.wellMesh)
+
+    // Create interior grid visualization
+    this.gridMesh = this.createInteriorGrid()
+    scene.add(this.gridMesh)
   }
 
   private createWireframe(): THREE.LineSegments {
@@ -45,6 +50,55 @@ export class Well {
     wireframe.position.set(width / 2, height / 2, depth / 2)
 
     return wireframe
+  }
+
+  private createInteriorGrid(): THREE.LineSegments {
+    const { width, depth, height } = this.wellData
+    const vertices: number[] = []
+
+    // Helper to add a line segment
+    const addLine = (x1: number, y1: number, z1: number, x2: number, y2: number, z2: number) => {
+      vertices.push(x1, y1, z1, x2, y2, z2)
+    }
+
+    // XZ horizontal grid lines at each Y level (horizontal layers)
+    for (let y = 0; y <= height; y++) {
+      // Lines parallel to X-axis
+      for (let z = 0; z <= depth; z++) {
+        addLine(0, y, z, width, y, z)
+      }
+      // Lines parallel to Z-axis
+      for (let x = 0; x <= width; x++) {
+        addLine(x, y, 0, x, y, depth)
+      }
+    }
+
+    // YZ vertical grid lines at each X level (side planes)
+    for (let x = 0; x <= width; x++) {
+      // Lines parallel to Y-axis
+      for (let z = 0; z <= depth; z++) {
+        addLine(x, 0, z, x, height, z)
+      }
+      // Lines parallel to Z-axis (already added in XZ grid)
+    }
+
+    // XY vertical grid lines at each Z level (front/back planes)
+    for (let z = 0; z <= depth; z++) {
+      // Lines parallel to Y-axis (already added in YZ grid)
+      // Lines parallel to X-axis (already added in XZ grid)
+    }
+
+    const geometry = new THREE.BufferGeometry()
+    geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3))
+
+    // Semi-transparent white grid material
+    const material = new THREE.LineBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.15
+    })
+
+    return new THREE.LineSegments(geometry, material)
   }
 
   getWellData(): GameWell {
