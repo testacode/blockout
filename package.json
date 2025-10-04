@@ -12,9 +12,15 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:ui": "vitest --ui"
+    "test:ui": "vitest --ui",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --write .",
+    "format": "biome format --write .",
+    "format:check": "biome format .",
+    "check": "tsc && biome check ."
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.2.5",
     "@types/three": "^0.180.0",
     "@vitest/ui": "^3.2.4",
     "happy-dom": "^19.0.2",
