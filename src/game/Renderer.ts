@@ -1,8 +1,8 @@
-import * as THREE from "three";
-import { ParticleEffects } from "../effects/ParticleEffects";
-import { gridToWorld, keyToBlock } from "../utils/coordinates";
-import { addVector3 } from "../utils/collision";
-import type { Piece3D, GameWell } from "../types";
+import * as THREE from 'three';
+import { ParticleEffects } from '../effects/ParticleEffects';
+import { gridToWorld, keyToBlock } from '../utils/coordinates';
+import { addVector3 } from '../utils/collision';
+import type { Piece3D, GameWell } from '../types';
 
 // Renderer - Three.js scene, camera, and rendering
 // Consumes game state but never modifies it (separation of concerns)
@@ -48,7 +48,7 @@ export class Renderer {
     this.particleEffects = new ParticleEffects(this.scene);
 
     // Handle window resize
-    window.addEventListener("resize", this.onWindowResize.bind(this));
+    window.addEventListener('resize', this.onWindowResize.bind(this));
   }
 
   private setupLighting(): void {
@@ -89,7 +89,7 @@ export class Renderer {
   }
 
   dispose(): void {
-    window.removeEventListener("resize", this.onWindowResize.bind(this));
+    window.removeEventListener('resize', this.onWindowResize.bind(this));
     this.renderer.dispose();
   }
 
