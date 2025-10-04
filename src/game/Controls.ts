@@ -41,6 +41,8 @@ export class Controls {
       e.preventDefault()
     }
 
+    console.debug(`[Controls] Key pressed: ${e.key}, repeat: ${e.repeat}`)
+
     switch (e.key.toLowerCase()) {
       // Lateral movement (X/Z plane)
       case 'arrowleft':

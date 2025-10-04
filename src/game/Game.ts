@@ -1,6 +1,7 @@
 import { Renderer } from './Renderer'
 import { Well } from './Well'
 import { Controls } from './Controls'
+import { GameUI } from '../ui/GameUI'
 import { AudioManager } from '../audio/AudioManager'
 import { createRandomPiece } from './Piece'
 import { wouldCollide, addVector3 } from '../utils/collision'
@@ -14,11 +15,16 @@ export class Game {
   private renderer: Renderer
   private well: Well
   private controls: Controls
+  private gameUI: GameUI
   private audioManager: AudioManager
   private state: GameState
   private lastTime: number = 0
   private animationFrameId: number | null = null
   private fallTimer: number = 0
+
+  // Scoring constants
+  private readonly SCORE_DROP = 1
+  private readonly SCORE_LINES = [0, 100, 300, 500, 800]  // [0, single, double, triple, quad+]
 
   constructor(container: HTMLElement) {
     // Initialize renderer and scene
@@ -30,6 +36,9 @@ export class Game {
     // Initialize controls
     this.controls = new Controls()
     this.controls.setActionHandler(this.handleAction.bind(this))
+
+    // Initialize UI
+    this.gameUI = new GameUI()
 
     // Initialize audio (stub for now)
     this.audioManager = new AudioManager()
@@ -53,6 +62,8 @@ export class Game {
   }
 
   start(): void {
+    // Generate first next piece
+    this.state.nextPiece = createRandomPiece()
     this.spawnPiece()
     this.controls.enable()
     this.lastTime = performance.now()
@@ -66,6 +77,9 @@ export class Game {
 
     // Update game logic
     this.update(deltaTime)
+
+    // Update UI
+    this.gameUI.update(this.state)
 
     // Render the scene
     this.renderer.update(deltaTime)
@@ -132,11 +146,13 @@ export class Game {
       this.animationFrameId = null
     }
     this.controls.disable()
+    this.gameUI.dispose()
     this.renderer.dispose()
   }
 
   private spawnPiece(): void {
-    const newPiece = createRandomPiece()
+    // Use next piece if available, otherwise generate random
+    const newPiece = this.state.nextPiece || createRandomPiece()
 
     // Check if spawn position is blocked (game over)
     if (wouldCollide(newPiece, this.state.well, { x: 0, y: 0, z: 0 })) {
@@ -147,6 +163,9 @@ export class Game {
 
     this.state.currentPiece = newPiece
     this.renderer.updateCurrentPiece(newPiece)
+
+    // Generate new next piece
+    this.state.nextPiece = createRandomPiece()
   }
 
   private lockPiece(): void {
@@ -170,6 +189,76 @@ export class Game {
 
     // Clear current piece
     this.state.currentPiece = null
+
+    // Check for complete layers and clear them
+    this.checkAndClearLayers()
+  }
+
+  private checkAndClearLayers(): void {
+    const completeLayers: number[] = []
+    const wellData = this.well.getWellData()
+
+    // Find all complete layers
+    for (let y = 0; y < wellData.height; y++) {
+      if (this.well.isLayerComplete(y)) {
+        completeLayers.push(y)
+      }
+    }
+
+    if (completeLayers.length === 0) {
+      return
+    }
+
+    console.debug(`[Game] Clearing ${completeLayers.length} layer(s):`, completeLayers)
+
+    // Clear the layers
+    for (const y of completeLayers) {
+      this.well.clearLayer(y)
+    }
+
+    // Drop blocks above cleared layers
+    this.dropBlocksAbove(completeLayers)
+
+    // Update renderer
+    this.renderer.updateOccupiedBlocks(this.well)
+
+    // Update score and stats
+    this.state.linesCleared += completeLayers.length
+    this.addScore(completeLayers.length)
+  }
+
+  private addScore(linesCleared: number): void {
+    // Add points based on number of lines cleared at once
+    const lineScore = this.SCORE_LINES[Math.min(linesCleared, this.SCORE_LINES.length - 1)]
+    this.state.score += lineScore
+    console.debug(`[Game] Score +${lineScore} (${linesCleared} line(s)), Total: ${this.state.score}`)
+  }
+
+  private dropBlocksAbove(clearedLayers: number[]): void {
+    const wellData = this.well.getWellData()
+
+    // Sort layers from bottom to top for proper dropping
+    const sortedLayers = [...clearedLayers].sort((a, b) => a - b)
+
+    // For each cleared layer, drop all blocks above it
+    for (const clearedY of sortedLayers) {
+      // Scan from cleared layer upward
+      for (let y = clearedY + 1; y < wellData.height; y++) {
+        for (let x = 0; x < wellData.width; x++) {
+          for (let z = 0; z < wellData.depth; z++) {
+            const key = `${x},${y},${z}`
+            const color = wellData.occupiedCells.get(key)
+
+            if (color) {
+              // Remove block from current position
+              this.well.removeBlock(x, y, z)
+              // Add block one position down
+              this.well.addBlock(x, y - 1, z, color)
+            }
+          }
+        }
+      }
+    }
   }
 
   private handleAction(action: { type: string, offset?: Vector3, axis?: 'x' | 'y' | 'z', direction?: number }): void {
@@ -218,11 +307,13 @@ export class Game {
 
   private rotatePiece(axis: 'x' | 'y' | 'z', direction: number): void {
     if (!this.state.currentPiece || this.state.isPaused) {
+      console.debug('[Game] Rotation blocked: no piece or paused')
       return
     }
 
     // Rotate 90 degrees in the specified direction
     const angle = direction * 90
+    console.debug(`[Game] Attempting rotation: axis=${axis}, direction=${direction}, angle=${angle}°`)
 
     // Create rotated copy of blocks
     const rotatedBlocks = rotateBlocks(this.state.currentPiece.blocks, axis, angle)
@@ -235,8 +326,11 @@ export class Game {
 
     // Check if rotation is valid (no collision at current position)
     if (!wouldCollide(testPiece, this.state.well, { x: 0, y: 0, z: 0 })) {
+      console.debug('[Game] Rotation SUCCESS')
       this.state.currentPiece.blocks = rotatedBlocks
       this.renderer.updateCurrentPiece(this.state.currentPiece)
+    } else {
+      console.debug('[Game] Rotation BLOCKED by collision')
     }
   }
 
