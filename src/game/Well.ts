@@ -64,31 +64,44 @@ export class Well {
       vertices.push(x1, y1, z1, x2, y2, z2)
     }
 
-    // XZ horizontal grid lines at each Y level (horizontal layers)
-    for (let y = 0; y <= height; y++) {
-      // Lines parallel to X-axis
-      for (let z = 0; z <= depth; z++) {
-        addLine(0, y, z, width, y, z)
-      }
-      // Lines parallel to Z-axis
-      for (let x = 0; x <= width; x++) {
-        addLine(x, y, 0, x, y, depth)
-      }
-    }
-
-    // YZ vertical grid lines at each X level (side planes)
-    for (let x = 0; x <= width; x++) {
-      // Lines parallel to Y-axis
-      for (let z = 0; z <= depth; z++) {
-        addLine(x, 0, z, x, height, z)
-      }
-      // Lines parallel to Z-axis (already added in XZ grid)
-    }
-
-    // XY vertical grid lines at each Z level (front/back planes)
+    // 1. Bottom floor grid (y = 0)
     for (let z = 0; z <= depth; z++) {
-      // Lines parallel to Y-axis (already added in YZ grid)
-      // Lines parallel to X-axis (already added in XZ grid)
+      addLine(0, 0, z, width, 0, z)  // Lines parallel to X-axis
+    }
+    for (let x = 0; x <= width; x++) {
+      addLine(x, 0, 0, x, 0, depth)  // Lines parallel to Z-axis
+    }
+
+    // 2. Back wall grid (z = depth)
+    for (let y = 0; y <= height; y++) {
+      addLine(0, y, depth, width, y, depth)  // Horizontal lines
+    }
+    for (let x = 0; x <= width; x++) {
+      addLine(x, 0, depth, x, height, depth)  // Vertical lines
+    }
+
+    // 3. Left wall grid (x = 0)
+    for (let y = 0; y <= height; y++) {
+      addLine(0, y, 0, 0, y, depth)  // Horizontal lines
+    }
+    for (let z = 0; z <= depth; z++) {
+      addLine(0, 0, z, 0, height, z)  // Vertical lines
+    }
+
+    // 4. Right wall grid (x = width)
+    for (let y = 0; y <= height; y++) {
+      addLine(width, y, 0, width, y, depth)  // Horizontal lines
+    }
+    for (let z = 0; z <= depth; z++) {
+      addLine(width, 0, z, width, height, z)  // Vertical lines
+    }
+
+    // 5. Front wall grid (z = 0)
+    for (let y = 0; y <= height; y++) {
+      addLine(0, y, 0, width, y, 0)  // Horizontal lines
+    }
+    for (let x = 0; x <= width; x++) {
+      addLine(x, 0, 0, x, height, 0)  // Vertical lines
     }
 
     const geometry = new THREE.BufferGeometry()
@@ -98,7 +111,7 @@ export class Well {
     const material = new THREE.LineBasicMaterial({
       color: 0x00ff00,
       transparent: true,
-      opacity: 0.2
+      opacity: 0.3
     })
 
     return new THREE.LineSegments(geometry, material)
