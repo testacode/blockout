@@ -1,33 +1,107 @@
 // AudioManager - Web Audio API wrapper for game sounds
-// Phase 5: Will implement sound effects using native Web Audio API
-// - Piece move, rotate, land sounds
-// - Line clear effects
-// - Game over sound
-// - 3D positional audio support
+// Loads and plays sound effects using native Web Audio API
 
 export class AudioManager {
-  // Stub implementation - will be filled in Phase 5
+  private audioContext: AudioContext | null = null
+  private sounds: Map<string, AudioBuffer> = new Map()
+  private enabled: boolean = false
+
   constructor() {
-    // TODO: Initialize Web Audio API context
+    // Audio context requires user interaction to start (browser security)
+    // We'll initialize it on first sound play
+  }
+
+  private async initAudioContext(): Promise<void> {
+    if (this.audioContext) {
+      return
+    }
+
+    try {
+      this.audioContext = new AudioContext()
+      await this.loadSounds()
+      this.enabled = true
+      console.debug('[AudioManager] Initialized and sounds loaded')
+    } catch (error) {
+      console.warn('[AudioManager] Failed to initialize:', error)
+      this.enabled = false
+    }
+  }
+
+  private async loadSounds(): Promise<void> {
+    if (!this.audioContext) {
+      return
+    }
+
+    const soundFiles = {
+      move: '/sound/drop-piece.wav',
+      rotate: '/sound/rotate.wav',
+      lock: '/sound/lock.wav',
+      clear: '/sound/line-clear.wav'
+    }
+
+    const loadPromises = Object.entries(soundFiles).map(async ([name, path]) => {
+      try {
+        const response = await fetch(path)
+        const arrayBuffer = await response.arrayBuffer()
+        const audioBuffer = await this.audioContext!.decodeAudioData(arrayBuffer)
+        this.sounds.set(name, audioBuffer)
+        console.debug(`[AudioManager] Loaded sound: ${name}`)
+      } catch (error) {
+        console.warn(`[AudioManager] Failed to load sound ${name}:`, error)
+      }
+    })
+
+    await Promise.all(loadPromises)
+  }
+
+  private async playSound(name: string, volume: number = 0.3): Promise<void> {
+    // Initialize on first play (requires user interaction)
+    if (!this.audioContext) {
+      await this.initAudioContext()
+    }
+
+    if (!this.enabled || !this.audioContext) {
+      return
+    }
+
+    const buffer = this.sounds.get(name)
+    if (!buffer) {
+      return
+    }
+
+    try {
+      const source = this.audioContext.createBufferSource()
+      const gainNode = this.audioContext.createGain()
+
+      source.buffer = buffer
+      gainNode.gain.value = volume
+
+      source.connect(gainNode)
+      gainNode.connect(this.audioContext.destination)
+
+      source.start(0)
+    } catch (error) {
+      console.warn(`[AudioManager] Failed to play sound ${name}:`, error)
+    }
   }
 
   playPieceMove(): void {
-    // TODO: Play piece movement sound
+    this.playSound('move', 0.2)
   }
 
   playPieceRotate(): void {
-    // TODO: Play piece rotation sound
+    this.playSound('rotate', 0.3)
   }
 
-  playPieceLand(): void {
-    // TODO: Play piece landing sound
+  playPieceLock(): void {
+    this.playSound('lock', 0.4)
   }
 
   playLineClear(): void {
-    // TODO: Play line clear sound
+    this.playSound('clear', 0.5)
   }
 
   playGameOver(): void {
-    // TODO: Play game over sound
+    // Could add a game over sound later
   }
 }

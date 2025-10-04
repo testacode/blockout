@@ -177,7 +177,7 @@ export class Game {
     this.fallTimer = 0
 
     // Update renderer
-    this.renderer.updateOccupiedBlocks(this.well)
+    this.renderer.updateOccupiedBlocks(this.well.getWellData())
     this.renderer.updateCurrentPiece(null)
 
     // Start fresh
@@ -222,6 +222,9 @@ export class Game {
     // Update renderer to show locked blocks
     this.renderer.updateOccupiedBlocks(this.state.well)
 
+    // Play lock sound
+    this.audioManager.playPieceLock()
+
     // Clear current piece
     this.state.currentPiece = null
 
@@ -246,16 +249,21 @@ export class Game {
 
     console.debug(`[Game] Clearing ${completeLayers.length} layer(s):`, completeLayers)
 
+    // Play line clear sound
+    this.audioManager.playLineClear()
+
     // Clear the layers
     for (const y of completeLayers) {
       this.well.clearLayer(y)
+      // Spawn particle effect for each cleared layer
+      this.renderer.getParticleEffects().spawnLineClearEffect(y)
     }
 
     // Drop blocks above cleared layers
     this.dropBlocksAbove(completeLayers)
 
     // Update renderer
-    this.renderer.updateOccupiedBlocks(this.well)
+    this.renderer.updateOccupiedBlocks(this.well.getWellData())
 
     // Update score and stats
     this.state.linesCleared += completeLayers.length
@@ -383,6 +391,7 @@ export class Game {
         offset
       )
       this.renderer.updateCurrentPiece(this.state.currentPiece)
+      this.audioManager.playPieceMove()
     }
   }
 
@@ -410,6 +419,7 @@ export class Game {
       console.debug('[Game] Rotation SUCCESS')
       this.state.currentPiece.blocks = rotatedBlocks
       this.renderer.updateCurrentPiece(this.state.currentPiece)
+      this.audioManager.playPieceRotate()
     } else {
       console.debug('[Game] Rotation BLOCKED by collision')
     }

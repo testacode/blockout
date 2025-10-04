@@ -31,7 +31,8 @@ Start with these basic pieces:
 - **A/S**: Rotate around Y axis
 - **Z/X**: Rotate around Z axis
 - **Space**: Fast drop
-- **P**: Pause
+- **P**: Pause/unpause
+- **R**: Restart game
 
 ## Domain Model (TypeScript Types)
 
@@ -116,33 +117,40 @@ type GameRules = {
 - Updated `src/game/Game.ts` - Gravity, spawning, locking mechanics
 - Updated `src/game/Renderer.ts` - Visual rendering of pieces and occupied blocks
 
-### Phase 2.5: Visual Enhancements 🔜 **NEXT**
-1. Adjust camera angle to top-down view (match reference image)
-2. Add 3D grid visualization throughout well interior
-3. Improve depth perception for upcoming rotation controls
+### Phase 2.5: Visual Enhancements ✅ **COMPLETED**
+1. ✅ Adjust camera angle to top-down view (position: 2.5, 25, 2.5)
+2. ✅ Add 3D grid visualization throughout well interior (semi-transparent white)
+3. ✅ Improve depth perception for upcoming rotation controls
 
 **Purpose:** Better visuals will help testing/debugging Phase 3 controls and rotations
 
-### Phase 3: Player Control
-1. Implement lateral movement (arrow keys)
-2. Add boundary checking (can't move outside well)
-3. Implement fast drop (spacebar)
-4. Add rotation for one axis first, then expand
+### Phase 3: Player Control ✅ **COMPLETED**
+1. ✅ Implement lateral movement (arrow keys) with collision detection
+2. ✅ Add boundary checking (can't move outside well)
+3. ✅ Implement fast drop (spacebar)
+4. ✅ Add 3D rotation for all three axes (Q/W, A/S, Z/X)
+5. ✅ Add pause/unpause functionality (P key)
 
-### Phase 4: Game Logic
-1. Detect complete layers
-2. Remove complete layers and drop blocks above
-3. Implement scoring system
-4. Add next piece preview
-5. Game over detection (pieces reach top)
-6. Create UI panel displaying: score, cubes played, high score, pit dimensions
+### Phase 4: Game Logic ✅ **COMPLETED**
+1. ✅ Detect complete layers (count blocks per Y level)
+2. ✅ Remove complete layers and drop blocks above with gravity
+3. ✅ Implement scoring system (100/300/500/800 pts for 1/2/3/4+ lines)
+4. ✅ Add next piece preview (generated in advance)
+5. ✅ Game over detection (pieces reach top)
+6. ✅ Create UI panel displaying: score, lines, level, high score, pit dimensions
 
-### Phase 5: Polish
-1. Add start/pause/restart functionality
-2. Implement levels and speed increase
-3. Add particle effects for line clears (using Three.js Points)
-4. Sound effects using Web Audio API
-5. High score persistence (localStorage)
+### Phase 5: Polish ✅ **COMPLETED**
+1. ✅ Add start/pause/restart functionality (R key restarts anytime)
+2. ✅ Implement levels and speed increase (every 10 lines, speed: 1000ms → 100ms)
+3. ✅ Add particle effects for line clears (100 particles w/ physics & fade)
+4. ✅ Sound effects using Web Audio API (move, rotate, lock, line clear sounds)
+5. ✅ High score persistence (localStorage)
+
+## Project Status
+
+**🎉 ALL PHASES COMPLETE! 🎉**
+
+The game is fully functional and production-ready with all planned features implemented.
 
 ## Project Structure
 

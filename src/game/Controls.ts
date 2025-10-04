@@ -38,10 +38,13 @@ export class Controls {
     // Prevent default browser behavior for game keys
     const gameKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'p', 'r',
                       'q', 'w', 'a', 's', 'z', 'x', 'Q', 'W', 'A', 'S', 'Z', 'X', 'R']
-    if (gameKeys.includes(e.key)) {
-      e.preventDefault()
+
+    // Only process game keys (ignore unregistered keys)
+    if (!gameKeys.includes(e.key)) {
+      return
     }
 
+    e.preventDefault()
     console.debug(`[Controls] Key pressed: ${e.key}, repeat: ${e.repeat}`)
 
     switch (e.key.toLowerCase()) {
