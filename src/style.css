@@ -79,6 +79,10 @@ canvas {
   color: #00ff00;
 }
 
+.stat-value-highlight {
+  color: #ffff00;
+}
+
 .game-over {
   margin-top: 20px;
   padding: 15px;

@@ -2,13 +2,16 @@
 // Updates from GameState
 
 import type { GameState } from '../types'
+import type { Game } from '../game/Game'
 
 export class GameUI {
   private container: HTMLElement
   private scoreElement: HTMLElement
   private linesElement: HTMLElement
   private levelElement: HTMLElement
+  private highScoreElement: HTMLElement
   private gameOverElement: HTMLElement
+  private game: Game | null = null
 
   constructor() {
     this.container = this.createUI()
@@ -17,7 +20,12 @@ export class GameUI {
     this.scoreElement = document.getElementById('game-score')!
     this.linesElement = document.getElementById('game-lines')!
     this.levelElement = document.getElementById('game-level')!
+    this.highScoreElement = document.getElementById('game-highscore')!
     this.gameOverElement = document.getElementById('game-over')!
+  }
+
+  setGame(game: Game): void {
+    this.game = game
   }
 
   private createUI(): HTMLElement {
@@ -30,6 +38,11 @@ export class GameUI {
         <div class="stat-group">
           <div class="stat-label">SCORE</div>
           <div class="stat-value" id="game-score">0</div>
+        </div>
+
+        <div class="stat-group">
+          <div class="stat-label">HIGH SCORE</div>
+          <div class="stat-value stat-value-highlight" id="game-highscore">0</div>
         </div>
 
         <div class="stat-group">
@@ -59,6 +72,7 @@ export class GameUI {
           <div class="hint-item">Z/X: Rotate Z</div>
           <div class="hint-item">Space: Drop</div>
           <div class="hint-item">P: Pause</div>
+          <div class="hint-item">R: Restart</div>
         </div>
       </div>
     `
@@ -69,6 +83,11 @@ export class GameUI {
     this.scoreElement.textContent = state.score.toString()
     this.linesElement.textContent = state.linesCleared.toString()
     this.levelElement.textContent = state.level.toString()
+
+    // Update high score
+    if (this.game) {
+      this.highScoreElement.textContent = this.game.getHighScore().toString()
+    }
 
     if (state.gameOver) {
       this.gameOverElement.classList.remove('hidden')

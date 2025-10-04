@@ -6,6 +6,7 @@ type ControlAction =
   | { type: 'rotate', axis: 'x' | 'y' | 'z', direction: number }
   | { type: 'fastDrop' }
   | { type: 'pause' }
+  | { type: 'restart' }
 
 type ActionHandler = (action: ControlAction) => void
 
@@ -35,8 +36,8 @@ export class Controls {
     }
 
     // Prevent default browser behavior for game keys
-    const gameKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'p',
-                      'q', 'w', 'a', 's', 'z', 'x', 'Q', 'W', 'A', 'S', 'Z', 'X']
+    const gameKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'p', 'r',
+                      'q', 'w', 'a', 's', 'z', 'x', 'Q', 'W', 'A', 'S', 'Z', 'X', 'R']
     if (gameKeys.includes(e.key)) {
       e.preventDefault()
     }
@@ -90,6 +91,11 @@ export class Controls {
       // Pause
       case 'p':
         this.actionHandler({ type: 'pause' })
+        break
+
+      // Restart
+      case 'r':
+        this.actionHandler({ type: 'restart' })
         break
     }
   }
