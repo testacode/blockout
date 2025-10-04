@@ -169,7 +169,8 @@ src/
     ├── ui-panel.css     # UI panel styles
     └── animations.css   # Animations and transitions
 
-sound/                   # Audio files (.wav)
+public/
+└── sound/               # Audio files (.wav)
 docs/                    # Game specification
 ```
 

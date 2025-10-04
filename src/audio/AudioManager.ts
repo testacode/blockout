@@ -38,11 +38,10 @@ export class AudioManager {
       try {
         const response = await fetch(path);
         const arrayBuffer = await response.arrayBuffer();
-        const audioBuffer = await this.audioContext?.decodeAudioData(arrayBuffer);
-        if (audioBuffer) {
-          this.sounds.set(name, audioBuffer);
-          console.debug(`[AudioManager] Loaded sound: ${name}`);
-        }
+        // biome-ignore lint/style/noNonNullAssertion: audioContext is checked at the start of loadSounds
+        const audioBuffer = await this.audioContext!.decodeAudioData(arrayBuffer);
+        this.sounds.set(name, audioBuffer);
+        console.debug(`[AudioManager] Loaded sound: ${name}`);
       } catch (error) {
         console.warn(`[AudioManager] Failed to load sound ${name}:`, error);
       }
