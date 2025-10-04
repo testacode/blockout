@@ -1,7 +1,9 @@
 import { Renderer } from './Renderer'
 import { Well } from './Well'
 import { AudioManager } from '../audio/AudioManager'
-import type { GameState } from '../types'
+import { createRandomPiece } from './Piece'
+import { wouldCollide, addVector3 } from '../utils/collision'
+import type { GameState, Vector3 } from '../types'
 
 // Game - Main game loop and state management
 // Single source of truth for game state
@@ -13,6 +15,7 @@ export class Game {
   private state: GameState
   private lastTime: number = 0
   private animationFrameId: number | null = null
+  private fallTimer: number = 0
 
   constructor(container: HTMLElement) {
     // Initialize renderer and scene
@@ -43,6 +46,7 @@ export class Game {
   }
 
   start(): void {
+    this.spawnPiece()
     this.lastTime = performance.now()
     this.gameLoop()
   }
@@ -68,10 +72,36 @@ export class Game {
       return
     }
 
-    // TODO: Phase 2-4
-    // - Update piece falling
-    // - Check collisions
-    // - Handle piece landing
+    if (!this.state.currentPiece) {
+      return
+    }
+
+    // Accumulate fall timer
+    this.fallTimer += deltaTime
+
+    // Check if it's time to drop the piece
+    if (this.fallTimer >= this.state.fallSpeed) {
+      this.fallTimer = 0
+
+      // Try to move piece down
+      const downOffset: Vector3 = { x: 0, y: -1, z: 0 }
+
+      if (!wouldCollide(this.state.currentPiece, this.state.well, downOffset)) {
+        // Move piece down
+        this.state.currentPiece.position = addVector3(
+          this.state.currentPiece.position,
+          downOffset
+        )
+        // Update visual representation
+        this.renderer.updateCurrentPiece(this.state.currentPiece)
+      } else {
+        // Piece has landed - lock it and spawn new piece
+        this.lockPiece()
+        this.spawnPiece()
+      }
+    }
+
+    // TODO: Phase 4
     // - Check for complete layers
     // - Update score
   }
@@ -94,5 +124,42 @@ export class Game {
       this.animationFrameId = null
     }
     this.renderer.dispose()
+  }
+
+  private spawnPiece(): void {
+    const newPiece = createRandomPiece()
+
+    // Check if spawn position is blocked (game over)
+    if (wouldCollide(newPiece, this.state.well, { x: 0, y: 0, z: 0 })) {
+      this.state.gameOver = true
+      console.log('Game Over!')
+      return
+    }
+
+    this.state.currentPiece = newPiece
+    this.renderer.updateCurrentPiece(newPiece)
+  }
+
+  private lockPiece(): void {
+    if (!this.state.currentPiece) {
+      return
+    }
+
+    // Add each block to occupied cells
+    for (const block of this.state.currentPiece.blocks) {
+      const worldPos = addVector3(this.state.currentPiece.position, block)
+      this.well.addBlock(
+        worldPos.x,
+        worldPos.y,
+        worldPos.z,
+        this.state.currentPiece.color
+      )
+    }
+
+    // Update renderer to show locked blocks
+    this.renderer.updateOccupiedBlocks(this.state.well)
+
+    // Clear current piece
+    this.state.currentPiece = null
   }
 }

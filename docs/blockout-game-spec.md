@@ -14,6 +14,7 @@ Create a web-based 3D Tetris clone (Blockout) using Three.js and TypeScript. The
 ### Game Well
 - Dimensions: 5x5x10 (width x depth x height)
 - Transparent/wireframe walls to see inside
+- Full 3D grid lines throughout interior for depth perception
 - Grid-based coordinate system
 
 ### Game Pieces (3D Tetrominos)
@@ -101,12 +102,26 @@ type GameRules = {
 - `src/effects/ParticleEffects.ts` - Stub for Phase 5
 - `src/main.ts` - Entry point
 
-### Phase 2: Core Mechanics 🔜 **NEXT**
-1. Create piece definitions (start with just Cube and I-piece)
-2. Implement piece spawning at top center
-3. Add gravity (piece falls one unit per interval)
-4. Implement collision detection with bottom
-5. Add piece to occupiedCells when it lands
+### Phase 2: Core Mechanics ✅ **COMPLETED**
+1. ✅ Create piece definitions (start with just Cube and I-piece)
+2. ✅ Implement piece spawning at top center
+3. ✅ Add gravity (piece falls one unit per interval)
+4. ✅ Implement collision detection with bottom and occupied cells
+5. ✅ Add piece to occupiedCells when it lands
+
+**Completed Files:**
+- `src/game/Piece.ts` - CUBE and I_PIECE definitions with spawn logic
+- `src/utils/collision.ts` - Collision detection algorithm
+- `src/utils/coordinates.ts` - Grid/world coordinate helpers
+- Updated `src/game/Game.ts` - Gravity, spawning, locking mechanics
+- Updated `src/game/Renderer.ts` - Visual rendering of pieces and occupied blocks
+
+### Phase 2.5: Visual Enhancements 🔜 **NEXT**
+1. Adjust camera angle to top-down view (match reference image)
+2. Add 3D grid visualization throughout well interior
+3. Improve depth perception for upcoming rotation controls
+
+**Purpose:** Better visuals will help testing/debugging Phase 3 controls and rotations
 
 ### Phase 3: Player Control
 1. Implement lateral movement (arrow keys)
@@ -120,6 +135,7 @@ type GameRules = {
 3. Implement scoring system
 4. Add next piece preview
 5. Game over detection (pieces reach top)
+6. Create UI panel displaying: score, cubes played, high score, pit dimensions
 
 ### Phase 5: Polish
 1. Add start/pause/restart functionality
@@ -136,15 +152,17 @@ blockout/
 │   ├── main.ts              // Entry point ✅
 │   ├── game/
 │   │   ├── Game.ts          // Main game class ✅
-│   │   ├── Piece.ts         // Piece definitions and logic
+│   │   ├── Piece.ts         // Piece definitions and logic ✅
 │   │   ├── Well.ts          // Game well/board logic ✅
 │   │   ├── Controls.ts      // Input handling
 │   │   └── Renderer.ts      // Three.js rendering ✅
 │   ├── types/
 │   │   └── index.ts         // TypeScript types (NO interfaces) ✅
 │   ├── utils/
-│   │   ├── collision.ts     // Collision detection
-│   │   └── coordinates.ts   // Grid/world coordinate conversion
+│   │   ├── collision.ts     // Collision detection ✅
+│   │   └── coordinates.ts   // Grid/world coordinate conversion ✅
+│   ├── ui/                  // UI components (Phase 4)
+│   │   └── GameUI.ts        // UI panel for score/stats display
 │   ├── audio/               // Audio system (Phase 5) ✅
 │   │   └── AudioManager.ts  // Web Audio API wrapper (stub)
 │   └── effects/             // Visual effects (Phase 5) ✅
@@ -219,9 +237,10 @@ function findCompleteLayers(well: GameWell): number[] {
 - Grid lines: Semi-transparent white
 
 ### Camera
-- Initial position: Looking at well from slight angle
+- Top-down angled view for better well interior visibility
 - Perspective camera with 45° FOV
-- Position: (15, 15, 15) looking at (2.5, 5, 2.5)
+- Position: (2.5, 20, 12) looking at (2.5, 5, 2.5)
+- Steeper angle provides better depth perception for 3D gameplay
 
 ## Start Command
 ```bash
