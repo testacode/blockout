@@ -5,6 +5,7 @@ import type { GameState } from '../types'
 import type { Game } from '../game/Game'
 
 export class GameUI {
+  private wrapper: HTMLElement
   private container: HTMLElement
   private scoreElement: HTMLElement
   private linesElement: HTMLElement
@@ -14,8 +15,20 @@ export class GameUI {
   private game: Game | null = null
 
   constructor() {
+    // Create game wrapper to contain both canvas and UI
+    this.wrapper = document.createElement('div')
+    this.wrapper.id = 'game-wrapper'
+    document.body.appendChild(this.wrapper)
+
+    // Move the app element into the wrapper first (left side)
+    const appElement = document.getElementById('app')
+    if (appElement) {
+      this.wrapper.appendChild(appElement)
+    }
+
+    // Create UI panel and add to wrapper second (right side)
     this.container = this.createUI()
-    document.body.appendChild(this.container)
+    this.wrapper.appendChild(this.container)
 
     this.scoreElement = document.getElementById('game-score')!
     this.linesElement = document.getElementById('game-lines')!
@@ -99,7 +112,7 @@ export class GameUI {
   }
 
   dispose(): void {
-    this.container.remove()
+    this.wrapper.remove()
     this.gameOverElement.remove()
   }
 }
