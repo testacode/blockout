@@ -21,14 +21,14 @@ export class Renderer {
     this.scene.background = new THREE.Color(0x0a0a0a)
 
     // Create camera
-    // Top-down angled camera at (2.5, 20, 12) looking at well center (2.5, 5, 2.5)
+    // Top-down view looking straight down into the well from above
     this.camera = new THREE.PerspectiveCamera(
       45,
       window.innerWidth / window.innerHeight,
       0.1,
       1000
     )
-    this.camera.position.set(2.5, 20, 12)
+    this.camera.position.set(2.5, 25, 2.5)
     this.camera.lookAt(2.5, 5, 2.5)
 
     // Create renderer
