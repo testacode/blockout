@@ -4,6 +4,7 @@ import { Controls } from './Controls'
 import { AudioManager } from '../audio/AudioManager'
 import { createRandomPiece } from './Piece'
 import { wouldCollide, addVector3 } from '../utils/collision'
+import { rotateBlocks } from '../utils/rotation'
 import type { GameState, Vector3 } from '../types'
 
 // Game - Main game loop and state management
@@ -171,7 +172,7 @@ export class Game {
     this.state.currentPiece = null
   }
 
-  private handleAction(action: { type: string, offset?: Vector3 }): void {
+  private handleAction(action: { type: string, offset?: Vector3, axis?: 'x' | 'y' | 'z', direction?: number }): void {
     if (this.state.gameOver) {
       return
     }
@@ -180,6 +181,11 @@ export class Game {
       case 'move':
         if (action.offset) {
           this.movePiece(action.offset)
+        }
+        break
+      case 'rotate':
+        if (action.axis && action.direction) {
+          this.rotatePiece(action.axis, action.direction)
         }
         break
       case 'fastDrop':
@@ -206,6 +212,30 @@ export class Game {
         this.state.currentPiece.position,
         offset
       )
+      this.renderer.updateCurrentPiece(this.state.currentPiece)
+    }
+  }
+
+  private rotatePiece(axis: 'x' | 'y' | 'z', direction: number): void {
+    if (!this.state.currentPiece || this.state.isPaused) {
+      return
+    }
+
+    // Rotate 90 degrees in the specified direction
+    const angle = direction * 90
+
+    // Create rotated copy of blocks
+    const rotatedBlocks = rotateBlocks(this.state.currentPiece.blocks, axis, angle)
+
+    // Create temporary piece with rotated blocks for collision check
+    const testPiece = {
+      ...this.state.currentPiece,
+      blocks: rotatedBlocks
+    }
+
+    // Check if rotation is valid (no collision at current position)
+    if (!wouldCollide(testPiece, this.state.well, { x: 0, y: 0, z: 0 })) {
+      this.state.currentPiece.blocks = rotatedBlocks
       this.renderer.updateCurrentPiece(this.state.currentPiece)
     }
   }

@@ -3,6 +3,7 @@
 
 type ControlAction =
   | { type: 'move', offset: { x: number, y: number, z: number } }
+  | { type: 'rotate', axis: 'x' | 'y' | 'z', direction: number }
   | { type: 'fastDrop' }
   | { type: 'pause' }
 
@@ -34,23 +35,49 @@ export class Controls {
     }
 
     // Prevent default browser behavior for game keys
-    if (['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'p'].includes(e.key)) {
+    const gameKeys = ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', ' ', 'p',
+                      'q', 'w', 'a', 's', 'z', 'x', 'Q', 'W', 'A', 'S', 'Z', 'X']
+    if (gameKeys.includes(e.key)) {
       e.preventDefault()
     }
 
-    switch (e.key) {
+    switch (e.key.toLowerCase()) {
       // Lateral movement (X/Z plane)
-      case 'ArrowLeft':
+      case 'arrowleft':
         this.actionHandler({ type: 'move', offset: { x: -1, y: 0, z: 0 } })
         break
-      case 'ArrowRight':
+      case 'arrowright':
         this.actionHandler({ type: 'move', offset: { x: 1, y: 0, z: 0 } })
         break
-      case 'ArrowUp':
+      case 'arrowup':
         this.actionHandler({ type: 'move', offset: { x: 0, y: 0, z: -1 } })
         break
-      case 'ArrowDown':
+      case 'arrowdown':
         this.actionHandler({ type: 'move', offset: { x: 0, y: 0, z: 1 } })
+        break
+
+      // Rotation around X-axis
+      case 'q':
+        this.actionHandler({ type: 'rotate', axis: 'x', direction: 1 })
+        break
+      case 'w':
+        this.actionHandler({ type: 'rotate', axis: 'x', direction: -1 })
+        break
+
+      // Rotation around Y-axis
+      case 'a':
+        this.actionHandler({ type: 'rotate', axis: 'y', direction: 1 })
+        break
+      case 's':
+        this.actionHandler({ type: 'rotate', axis: 'y', direction: -1 })
+        break
+
+      // Rotation around Z-axis
+      case 'z':
+        this.actionHandler({ type: 'rotate', axis: 'z', direction: 1 })
+        break
+      case 'x':
+        this.actionHandler({ type: 'rotate', axis: 'z', direction: -1 })
         break
 
       // Fast drop
@@ -60,17 +87,8 @@ export class Controls {
 
       // Pause
       case 'p':
-      case 'P':
         this.actionHandler({ type: 'pause' })
         break
-
-      // TODO: Phase 3.2 - Rotation controls
-      // case 'q': case 'Q': // Rotate X axis
-      // case 'w': case 'W': // Rotate X axis
-      // case 'a': case 'A': // Rotate Y axis
-      // case 's': case 'S': // Rotate Y axis
-      // case 'z': case 'Z': // Rotate Z axis
-      // case 'x': case 'X': // Rotate Z axis
     }
   }
 }
