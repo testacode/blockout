@@ -22,7 +22,7 @@ export class GameUI {
     this.levelElement = document.getElementById('game-level')!
     this.highScoreElement = document.getElementById('game-highscore')!
 
-    // Create game over overlay separately
+    // Create game over overlay (fixed positioning, centered on viewport)
     this.gameOverElement = this.createGameOverOverlay()
     document.body.appendChild(this.gameOverElement)
   }
@@ -77,7 +77,7 @@ export class GameUI {
     const overlay = document.createElement('div')
     overlay.id = 'game-over-overlay'
     overlay.className = 'game-over-overlay hidden'
-    overlay.innerHTML = 'GAME OVER'
+    overlay.textContent = 'GAME OVER'
     return overlay
   }
 

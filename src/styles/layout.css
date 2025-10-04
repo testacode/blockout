@@ -28,3 +28,27 @@ canvas {
   position: relative;
   z-index: 1000;
 }
+
+/* Game Over Overlay - centered on viewport */
+.game-over-overlay {
+  position: fixed;
+  top: 50%;
+  left: 55%;
+  transform: translate(-50%, -50%);
+  padding: 30px 60px;
+  background: rgba(255, 0, 0, 0.2);
+  border: 3px solid #ff0000;
+  color: #ff0000;
+  font-size: 36px;
+  font-weight: bold;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 4px;
+  text-align: center;
+  animation: blink 1s infinite;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.game-over-overlay.hidden {
+  display: none;
+}
