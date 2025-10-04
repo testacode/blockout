@@ -1,7 +1,7 @@
 // GameUI - Display game stats and information
 // Updates from GameState
 
-import type { GameState } from '../types'
+import type { GameState, Piece3D } from '../types'
 import type { Game } from '../game/Game'
 
 export class GameUI {
@@ -72,8 +72,8 @@ export class GameUI {
         </div>
 
         <div class="stat-group">
-          <div class="stat-label">PIT</div>
-          <div class="stat-value">5×5×10</div>
+          <div class="stat-label">NEXT</div>
+          <div id="next-piece-preview" class="next-piece-preview"></div>
         </div>
 
         <div class="controls-hint">
@@ -94,6 +94,59 @@ export class GameUI {
     return overlay
   }
 
+  private renderNextPiece(piece: Piece3D | null): void {
+    const previewContainer = document.getElementById('next-piece-preview')
+    if (!previewContainer) {
+      return
+    }
+
+    // Clear previous preview
+    previewContainer.innerHTML = ''
+
+    if (!piece) {
+      return
+    }
+
+    // Find bounding box of piece blocks
+    let minX = Infinity, maxX = -Infinity
+    let minZ = Infinity, maxZ = -Infinity
+
+    for (const block of piece.blocks) {
+      minX = Math.min(minX, block.x)
+      maxX = Math.max(maxX, block.x)
+      minZ = Math.min(minZ, block.z)
+      maxZ = Math.max(maxZ, block.z)
+    }
+
+    const width = maxX - minX + 1
+    const height = maxZ - minZ + 1
+
+    // Create grid container
+    const grid = document.createElement('div')
+    grid.className = 'preview-grid'
+    grid.style.gridTemplateColumns = `repeat(${width}, 1fr)`
+    grid.style.gridTemplateRows = `repeat(${height}, 1fr)`
+
+    // Create grid cells
+    for (let z = minZ; z <= maxZ; z++) {
+      for (let x = minX; x <= maxX; x++) {
+        const cell = document.createElement('div')
+        cell.className = 'preview-cell'
+
+        // Check if this position has a block
+        const hasBlock = piece.blocks.some(b => b.x === x && b.z === z)
+        if (hasBlock) {
+          cell.style.backgroundColor = piece.color
+          cell.classList.add('preview-cell-filled')
+        }
+
+        grid.appendChild(cell)
+      }
+    }
+
+    previewContainer.appendChild(grid)
+  }
+
   update(state: GameState): void {
     this.scoreElement.textContent = state.score.toString()
     this.linesElement.textContent = state.linesCleared.toString()
@@ -103,6 +156,9 @@ export class GameUI {
     if (this.game) {
       this.highScoreElement.textContent = this.game.getHighScore().toString()
     }
+
+    // Update next piece preview
+    this.renderNextPiece(state.nextPiece)
 
     if (state.gameOver) {
       this.gameOverElement.classList.remove('hidden')

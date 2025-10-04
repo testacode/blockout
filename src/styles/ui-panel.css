@@ -80,3 +80,32 @@
   margin-bottom: 3px;
   color: #6688cc;
 }
+
+/* Next piece preview */
+.next-piece-preview {
+  width: 100%;
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+}
+
+.preview-grid {
+  display: grid;
+  gap: 2px;
+  width: fit-content;
+  margin: 0 auto;
+}
+
+.preview-cell {
+  width: 16px;
+  height: 16px;
+  background-color: rgba(65, 105, 225, 0.1);
+  border: 1px solid rgba(65, 105, 225, 0.2);
+}
+
+.preview-cell-filled {
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+}
