@@ -180,8 +180,8 @@ describe('createPiece', () => {
     const oPiece = createPiece('o', wellHeight)
     const iPiece = createPiece('i', wellHeight)
 
-    expect(oPiece.position).toEqual({ x: 2, y: 8, z: 2 })
-    expect(iPiece.position).toEqual({ x: 2, y: 8, z: 2 })
+    expect(oPiece.position).toEqual({ x: 1, y: 8, z: 1 })
+    expect(iPiece.position).toEqual({ x: 1, y: 8, z: 1 })
   })
 
   it('should initialize rotation to zero', () => {
@@ -210,7 +210,7 @@ describe('createPiece', () => {
 
     // Other piece should be unaffected
     expect(piece2.blocks[0]).toEqual({ x: 0, y: 0, z: 0 })
-    expect(piece2.position).toEqual({ x: 2, y: 8, z: 2 })
+    expect(piece2.position).toEqual({ x: 1, y: 8, z: 1 })
   })
 })
 
@@ -255,7 +255,7 @@ describe('createRandomPiece', () => {
 
   it('should create piece at spawn position relative to well height', () => {
     const piece = createRandomPiece(wellHeight)
-    expect(piece.position).toEqual({ x: 2, y: 8, z: 2 })
+    expect(piece.position).toEqual({ x: 1, y: 8, z: 1 })
   })
 
   it('should create piece with zero rotation', () => {
@@ -314,11 +314,11 @@ describe('piece spawning logic', () => {
   })
 
   it('should spawn pieces centered horizontally in 5x5 well', () => {
-    // Well is 5x5, spawning at (2, wellHeight-2, 2) centers pieces
+    // Well is 5x5, spawning at (1, wellHeight-2, 1) to fit wide pieces like I-piece
     const piece = createPiece('o', wellHeight)
 
-    expect(piece.position.x).toBe(2)
-    expect(piece.position.z).toBe(2)
+    expect(piece.position.x).toBe(1)
+    expect(piece.position.z).toBe(1)
   })
 
   it('should spawn pieces with minimum well height (10)', () => {

@@ -43,7 +43,7 @@ canvas {
 .game-over-overlay {
   position: fixed;
   top: 50%;
-  left: 55%;
+  left: 43%;
   transform: translate(-50%, -50%);
   padding: 30px 60px;
   background: rgba(255, 0, 0, 0.2);
@@ -51,7 +51,7 @@ canvas {
   color: #ff0000;
   font-size: 36px;
   font-weight: bold;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   letter-spacing: 4px;
   text-align: center;
   animation: blink 1s infinite;

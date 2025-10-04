@@ -84,8 +84,8 @@ const PIECE_DEFINITIONS: Record<PieceType, PieceDefinition> = {
   'l-trimino': { blocks: L_TRIMINO_SHAPE, color: '#808080' } // Gray
 }
 
-// Create a new piece at the spawn position (top center of well)
-// Well is 5x5x(10-15), spawn centered horizontally at (2, wellHeight-2, 2)
+// Create a new piece at the spawn position (top left-center of well)
+// Well is 5x5x(10-15), spawn at (1, wellHeight-2, 1) to fit wide pieces like I-piece
 // wellHeight-2 gives margin for pieces (I-piece horizontal only needs 1 height)
 export function createPiece(type: PieceType, wellHeight: number): Piece3D {
   const definition = PIECE_DEFINITIONS[type]
@@ -93,7 +93,7 @@ export function createPiece(type: PieceType, wellHeight: number): Piece3D {
 
   return {
     blocks: [...definition.blocks], // Copy array to avoid mutation
-    position: { x: 2, y: spawnY, z: 2 },
+    position: { x: 1, y: spawnY, z: 1 },  // Adjusted to x:1, z:1 to prevent I-piece overflow
     color: definition.color,
     rotation: { x: 0, y: 0, z: 0 }
   }
