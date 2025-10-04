@@ -85,7 +85,7 @@ const PIECE_DEFINITIONS: Record<PieceType, PieceDefinition> = {
 }
 
 // Create a new piece at the spawn position (top center of well)
-// Well is 5x5x(7-10), spawn centered horizontally at (2, wellHeight-2, 2)
+// Well is 5x5x(10-15), spawn centered horizontally at (2, wellHeight-2, 2)
 // wellHeight-2 gives margin for pieces (I-piece horizontal only needs 1 height)
 export function createPiece(type: PieceType, wellHeight: number): Piece3D {
   const definition = PIECE_DEFINITIONS[type]

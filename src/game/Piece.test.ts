@@ -321,8 +321,8 @@ describe('piece spawning logic', () => {
     expect(piece.position.z).toBe(2)
   })
 
-  it('should spawn pieces with minimum well height (7)', () => {
-    const minWellHeight = 7
+  it('should spawn pieces with minimum well height (10)', () => {
+    const minWellHeight = 10
     const pieceTypes: PieceType[] = ['i', 'o', 't', 'l', 'j', 's', 'z', 'l-trimino']
 
     pieceTypes.forEach(type => {
