@@ -12,8 +12,8 @@ export class Renderer {
   private camera: THREE.PerspectiveCamera
   private renderer: THREE.WebGLRenderer
   private particleEffects: ParticleEffects
-  private currentPieceMeshes: THREE.Mesh[] = []
-  private occupiedBlockMeshes: Map<string, THREE.Mesh> = new Map()
+  private currentPieceWireframes: THREE.LineSegments[] = []
+  private occupiedBlockWireframes: Map<string, THREE.LineSegments> = new Map()
 
   constructor(container: HTMLElement) {
     // Create scene
@@ -21,7 +21,7 @@ export class Renderer {
     this.scene.background = new THREE.Color(0x0a0a0a)
 
     // Create camera
-    // Top-down view looking straight down into the well from above
+    // Top-down view with perspective
     this.camera = new THREE.PerspectiveCamera(
       45,
       window.innerWidth / window.innerHeight,
@@ -86,73 +86,72 @@ export class Renderer {
   }
 
   updateCurrentPiece(piece: Piece3D | null): void {
-    // Remove old piece meshes
-    this.currentPieceMeshes.forEach(mesh => {
-      this.scene.remove(mesh)
-      mesh.geometry.dispose()
-      if (mesh.material instanceof THREE.Material) {
-        mesh.material.dispose()
+    // Remove old piece wireframes
+    this.currentPieceWireframes.forEach(wireframe => {
+      this.scene.remove(wireframe)
+      wireframe.geometry.dispose()
+      if (wireframe.material instanceof THREE.Material) {
+        wireframe.material.dispose()
       }
     })
-    this.currentPieceMeshes = []
+    this.currentPieceWireframes = []
 
     if (!piece) {
       return
     }
 
-    // Create new meshes for current piece
-    const geometry = new THREE.BoxGeometry(1, 1, 1)
-    const material = new THREE.MeshPhongMaterial({
-      color: piece.color,
-      emissive: piece.color,
-      emissiveIntensity: 0.2
-    })
+    // Create wireframe blocks for current piece
+    const boxGeometry = new THREE.BoxGeometry(1, 1, 1)
+    const edgesGeometry = new THREE.EdgesGeometry(boxGeometry)
+    const material = new THREE.LineBasicMaterial({ color: piece.color })
 
     for (const block of piece.blocks) {
       const worldPos = addVector3(piece.position, block)
       const renderPos = gridToWorld(worldPos)
 
-      const mesh = new THREE.Mesh(geometry, material)
-      mesh.position.set(renderPos.x, renderPos.y, renderPos.z)
+      const wireframe = new THREE.LineSegments(edgesGeometry, material)
+      wireframe.position.set(renderPos.x, renderPos.y, renderPos.z)
 
-      this.scene.add(mesh)
-      this.currentPieceMeshes.push(mesh)
+      this.scene.add(wireframe)
+      this.currentPieceWireframes.push(wireframe)
     }
+
+    boxGeometry.dispose()
   }
 
   updateOccupiedBlocks(well: GameWell): void {
     // Remove blocks that no longer exist
     const currentKeys = new Set(well.occupiedCells.keys())
 
-    this.occupiedBlockMeshes.forEach((mesh, key) => {
+    this.occupiedBlockWireframes.forEach((wireframe, key) => {
       if (!currentKeys.has(key)) {
-        this.scene.remove(mesh)
-        mesh.geometry.dispose()
-        if (mesh.material instanceof THREE.Material) {
-          mesh.material.dispose()
+        this.scene.remove(wireframe)
+        wireframe.geometry.dispose()
+        if (wireframe.material instanceof THREE.Material) {
+          wireframe.material.dispose()
         }
-        this.occupiedBlockMeshes.delete(key)
+        this.occupiedBlockWireframes.delete(key)
       }
     })
 
-    // Add new blocks
+    // Add new blocks as wireframes
     well.occupiedCells.forEach((color, key) => {
-      if (!this.occupiedBlockMeshes.has(key)) {
+      if (!this.occupiedBlockWireframes.has(key)) {
         const pos = keyToBlock(key)
         const renderPos = gridToWorld(pos)
 
-        const geometry = new THREE.BoxGeometry(1, 1, 1)
-        const material = new THREE.MeshPhongMaterial({
-          color,
-          emissive: color,
-          emissiveIntensity: 0.1
-        })
+        const boxGeometry = new THREE.BoxGeometry(1, 1, 1)
+        const edgesGeometry = new THREE.EdgesGeometry(boxGeometry)
+        const material = new THREE.LineBasicMaterial({ color })
 
-        const mesh = new THREE.Mesh(geometry, material)
-        mesh.position.set(renderPos.x, renderPos.y, renderPos.z)
+        const wireframe = new THREE.LineSegments(edgesGeometry, material)
+        wireframe.position.set(renderPos.x, renderPos.y, renderPos.z)
 
-        this.scene.add(mesh)
-        this.occupiedBlockMeshes.set(key, mesh)
+        this.scene.add(wireframe)
+        this.occupiedBlockWireframes.set(key, wireframe)
+
+        boxGeometry.dispose()
+        edgesGeometry.dispose()
       }
     })
   }
