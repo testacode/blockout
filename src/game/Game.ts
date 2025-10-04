@@ -23,7 +23,7 @@ export class Game {
   private fallTimer: number = 0
 
   // Scoring constants
-  private readonly SCORE_DROP = 1
+  // private readonly SCORE_DROP = 1
   private readonly SCORE_LINES = [0, 100, 300, 500, 800]  // [0, single, double, triple, quad+]
 
   // Level constants
@@ -77,7 +77,7 @@ export class Game {
 
   start(): void {
     // Generate first next piece
-    this.state.nextPiece = createRandomPiece()
+    this.state.nextPiece = createRandomPiece(this.state.well.height)
     this.spawnPiece()
     this.controls.enable()
     this.lastTime = performance.now()
@@ -181,13 +181,13 @@ export class Game {
     this.renderer.updateCurrentPiece(null)
 
     // Start fresh
-    this.state.nextPiece = createRandomPiece()
+    this.state.nextPiece = createRandomPiece(this.state.well.height)
     this.spawnPiece()
   }
 
   private spawnPiece(): void {
     // Use next piece if available, otherwise generate random
-    const newPiece = this.state.nextPiece || createRandomPiece()
+    const newPiece = this.state.nextPiece || createRandomPiece(this.state.well.height)
 
     // Check if spawn position is blocked (game over)
     if (wouldCollide(newPiece, this.state.well, { x: 0, y: 0, z: 0 })) {
@@ -200,7 +200,7 @@ export class Game {
     this.renderer.updateCurrentPiece(newPiece)
 
     // Generate new next piece
-    this.state.nextPiece = createRandomPiece()
+    this.state.nextPiece = createRandomPiece(this.state.well.height)
   }
 
   private lockPiece(): void {

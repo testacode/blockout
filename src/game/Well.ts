@@ -11,11 +11,14 @@ export class Well {
   private gridMesh: THREE.LineSegments
 
   constructor(scene: THREE.Scene) {
+    // Generate random height between 7 and 10 (inclusive)
+    const randomHeight = Math.floor(Math.random() * 4) + 7  // 7, 8, 9, or 10
+
     // Initialize well data
     this.wellData = {
       width: 5,
       depth: 5,
-      height: 10,
+      height: randomHeight,
       occupiedCells: new Map<string, string>()
     }
 

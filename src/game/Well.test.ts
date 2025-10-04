@@ -27,7 +27,8 @@ describe('Well', () => {
       const wellData = well.getWellData()
       expect(wellData.width).toBe(5)
       expect(wellData.depth).toBe(5)
-      expect(wellData.height).toBe(10)
+      expect(wellData.height).toBeGreaterThanOrEqual(7)
+      expect(wellData.height).toBeLessThanOrEqual(10)
     })
 
     it('should return well data with empty occupied cells initially', () => {
@@ -42,8 +43,9 @@ describe('Well', () => {
     })
 
     it('should return true for boundary edges', () => {
+      const wellData = well.getWellData()
       expect(well.isInBounds(0, 0, 0)).toBe(true)
-      expect(well.isInBounds(4, 9, 4)).toBe(true)
+      expect(well.isInBounds(4, wellData.height - 1, 4)).toBe(true)
     })
 
     it('should return false for x < 0', () => {

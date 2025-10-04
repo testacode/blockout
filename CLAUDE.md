@@ -149,3 +149,4 @@ When working on features, refer to the spec for detailed requirements and exampl
 - Sound events: piece move, rotate, land, line clear, game over
 - Supports 3D positional audio (pieces landing at different positions)
 - Mobile considerations: requires user interaction to start audio context
+- If the dev server or the app is already running there's no need to run the build script
