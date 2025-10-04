@@ -29,7 +29,7 @@ export class Renderer {
       1000
     )
     this.camera.position.set(2.5, 25, 2.5)
-    this.camera.lookAt(2.5, 5, 2.5)
+    this.camera.lookAt(2.5, 7.5, 2.5)  // Center of 15-height well
 
     // Create renderer
     this.renderer = new THREE.WebGLRenderer({ antialias: true })

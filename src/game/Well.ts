@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import type { GameWell } from '../types'
 
 // Well - Game well logic and visualization
-// Dimensions: 5x5x(10-15) (width x depth x height - random)
+// Dimensions: 5x5x15 (width x depth x height - fixed)
 // Coordinate system: Y-axis is vertical (0 at bottom)
 
 export class Well {
@@ -11,14 +11,11 @@ export class Well {
   private gridMesh: THREE.LineSegments
 
   constructor(scene: THREE.Scene) {
-    // Generate random height between 10 and 15 (inclusive)
-    const randomHeight = Math.floor(Math.random() * 6) + 10  // 10, 11, 12, 13, 14, or 15
-
-    // Initialize well data
+    // Initialize well data with fixed height of 15
     this.wellData = {
       width: 5,
       depth: 5,
-      height: randomHeight,
+      height: 15,
       occupiedCells: new Map<string, string>()
     }
 
