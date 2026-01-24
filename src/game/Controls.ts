@@ -68,7 +68,18 @@ export class Controls {
 
     // Filter out key repeat for movement and rotation to prevent input spam
     // Allow key repeat only for fast drop (Space) and special keys (P, R)
-    const movementKeys = ['arrowleft', 'arrowright', 'arrowup', 'arrowdown', 'q', 'w', 'a', 's', 'z', 'x'];
+    const movementKeys = [
+      'arrowleft',
+      'arrowright',
+      'arrowup',
+      'arrowdown',
+      'q',
+      'w',
+      'a',
+      's',
+      'z',
+      'x',
+    ];
     if (e.repeat && movementKeys.includes(e.key.toLowerCase())) {
       return;
     }
