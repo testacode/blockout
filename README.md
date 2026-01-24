@@ -200,7 +200,7 @@ Runs on every push to `master`:
 ### Deployment
 
 - **Automatic deployment** to GitHub Pages on push to `master`
-- **Live URL**: https://testacode.github.io/blockout/
+- **Live URL**: https://blockout.carlosmonti.com
 - Built with Vite and optimized for production
 
 ## License
@@ -208,5 +208,7 @@ Runs on every push to `master`:
 MIT
 
 ## Credits
+
+Created by [testacode](https://github.com/testacode)
 
 Inspired by the classic Blockout game (1989) by California Dreams.
