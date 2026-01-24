@@ -25,11 +25,27 @@ npm run dev
 
 ## Development Commands
 
-Once initialized, these commands will be available:
-
 - `npm run dev` - Start development server with hot reload
 - `npm run build` - Build for production (TypeScript compilation + Vite bundling)
 - `npm run preview` - Preview production build locally
+- `npm run check` - Run typecheck + Biome lint
+- `npm run format` - Auto-fix formatting (Biome)
+- `npm run lint:fix` - Auto-fix lint issues (Biome)
+
+## Pre-commit Checklist (REQUIRED)
+
+**ALWAYS run these commands before any commit:**
+
+```bash
+npm run format && npm run check
+```
+
+This ensures:
+1. Code is properly formatted (Biome)
+2. TypeScript types are correct
+3. Lint rules pass
+
+The CI will fail if formatting is incorrect. `npm run check` alone does NOT fix formatting - you must run `npm run format` first.
 
 ## Architecture
 
