@@ -155,19 +155,15 @@ export class Well {
     }
   }
 
-  // Check if a layer is complete
+  // Check if a layer is complete (early exit on first empty cell)
   isLayerComplete(y: number): boolean {
-    const totalCells = this.wellData.width * this.wellData.depth;
-    let occupiedCount = 0;
-
     for (let x = 0; x < this.wellData.width; x++) {
       for (let z = 0; z < this.wellData.depth; z++) {
-        if (this.isOccupied(x, y, z)) {
-          occupiedCount++;
+        if (!this.isOccupied(x, y, z)) {
+          return false; // Early exit: found empty cell
         }
       }
     }
-
-    return occupiedCount === totalCells;
+    return true;
   }
 }

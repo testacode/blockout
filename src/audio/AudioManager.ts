@@ -100,4 +100,14 @@ export class AudioManager {
   playGameOver(): void {
     // Could add a game over sound later
   }
+
+  // Clean up audio resources
+  dispose(): void {
+    if (this.audioContext) {
+      this.audioContext.close();
+      this.audioContext = null;
+    }
+    this.sounds.clear();
+    this.enabled = false;
+  }
 }

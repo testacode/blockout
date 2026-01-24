@@ -253,6 +253,22 @@ describe('Well', () => {
       expect(well.isLayerComplete(0)).toBe(false);
       expect(well.isLayerComplete(3)).toBe(false);
     });
+
+    it('should early exit when first cell is empty (optimization)', () => {
+      // No blocks at y=0, should return false immediately
+      expect(well.isLayerComplete(0)).toBe(false);
+    });
+
+    it('should early exit when cell in middle is empty', () => {
+      // Fill first half of layer at y=3
+      for (let x = 0; x < 3; x++) {
+        for (let z = 0; z < 5; z++) {
+          well.addBlock(x, 3, z, '#ff0000');
+        }
+      }
+      // Missing blocks at x=3 and x=4
+      expect(well.isLayerComplete(3)).toBe(false);
+    });
   });
 
   describe('integration scenarios', () => {

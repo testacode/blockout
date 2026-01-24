@@ -7,6 +7,12 @@ import type { Piece3D, GameWell } from '../types';
 // Renderer - Three.js scene, camera, and rendering
 // Consumes game state but never modifies it (separation of concerns)
 
+// Cached geometry for reuse (avoids GC pressure)
+type GeometryCache = {
+  box: THREE.BoxGeometry;
+  edges: THREE.EdgesGeometry;
+};
+
 export class Renderer {
   private scene: THREE.Scene;
   private camera: THREE.PerspectiveCamera;
@@ -15,10 +21,28 @@ export class Renderer {
   private currentPieceWireframes: THREE.LineSegments[] = [];
   private occupiedBlockWireframes: Map<string, THREE.LineSegments> = new Map();
   private container: HTMLElement;
+  private boundResizeHandler: () => void;
+
+  // Caches for geometry and materials (performance optimization)
+  private geometryCache: GeometryCache;
+  private materialCache: Map<string, THREE.LineBasicMaterial> = new Map();
+
+  // Object pool for wireframes (reduces GC pressure)
+  private wireframePool: THREE.LineSegments[] = [];
+
+  // Dirty flag for conditional rendering
+  private needsRender: boolean = true;
 
   constructor(container: HTMLElement) {
     // Store container reference
     this.container = container;
+
+    // Initialize geometry cache (reused for all blocks)
+    const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+    this.geometryCache = {
+      box: boxGeometry,
+      edges: new THREE.EdgesGeometry(boxGeometry),
+    };
 
     // Create scene
     this.scene = new THREE.Scene();
@@ -47,8 +71,9 @@ export class Renderer {
     // Initialize particle effects
     this.particleEffects = new ParticleEffects(this.scene);
 
-    // Handle window resize
-    window.addEventListener('resize', this.onWindowResize.bind(this));
+    // Handle window resize (store bound reference for proper cleanup)
+    this.boundResizeHandler = this.onWindowResize.bind(this);
+    window.addEventListener('resize', this.boundResizeHandler);
   }
 
   private setupLighting(): void {
@@ -81,7 +106,17 @@ export class Renderer {
   }
 
   render(): void {
+    // Skip render if no changes and no active particle effects
+    if (!this.needsRender && !this.particleEffects.hasActiveEffects()) {
+      return;
+    }
     this.renderer.render(this.scene, this.camera);
+    this.needsRender = false;
+  }
+
+  // Mark scene as needing re-render
+  markDirty(): void {
+    this.needsRender = true;
   }
 
   update(deltaTime: number): void {
@@ -89,78 +124,110 @@ export class Renderer {
   }
 
   dispose(): void {
-    window.removeEventListener('resize', this.onWindowResize.bind(this));
+    window.removeEventListener('resize', this.boundResizeHandler);
+    this.particleEffects.dispose();
+
+    // Dispose cached geometries
+    this.geometryCache.box.dispose();
+    this.geometryCache.edges.dispose();
+
+    // Dispose cached materials
+    for (const material of this.materialCache.values()) {
+      material.dispose();
+    }
+    this.materialCache.clear();
+
     this.renderer.dispose();
   }
 
+  // Get or create cached material for a color
+  private getMaterial(color: string): THREE.LineBasicMaterial {
+    let material = this.materialCache.get(color);
+    if (!material) {
+      material = new THREE.LineBasicMaterial({ color });
+      this.materialCache.set(color, material);
+    }
+    return material;
+  }
+
+  // Get a wireframe from pool or create new one
+  private getWireframe(material: THREE.LineBasicMaterial): THREE.LineSegments {
+    const wireframe = this.wireframePool.pop();
+    if (wireframe) {
+      wireframe.material = material;
+      wireframe.visible = true;
+      return wireframe;
+    }
+    return new THREE.LineSegments(this.geometryCache.edges, material);
+  }
+
+  // Return a wireframe to the pool for reuse
+  private returnToPool(wireframe: THREE.LineSegments): void {
+    this.scene.remove(wireframe);
+    wireframe.visible = false;
+    this.wireframePool.push(wireframe);
+  }
+
   updateCurrentPiece(piece: Piece3D | null): void {
-    // Remove old piece wireframes
-    this.currentPieceWireframes.forEach((wireframe) => {
-      this.scene.remove(wireframe);
-      wireframe.geometry.dispose();
-      if (wireframe.material instanceof THREE.Material) {
-        wireframe.material.dispose();
-      }
-    });
+    // Return old wireframes to pool for reuse
+    for (const wireframe of this.currentPieceWireframes) {
+      this.returnToPool(wireframe);
+    }
     this.currentPieceWireframes = [];
 
     if (!piece) {
+      this.needsRender = true;
       return;
     }
 
-    // Create wireframe blocks for current piece
-    const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
-    const edgesGeometry = new THREE.EdgesGeometry(boxGeometry);
-    const material = new THREE.LineBasicMaterial({ color: piece.color });
+    // Use cached geometry, material, and pooled wireframes
+    const material = this.getMaterial(piece.color);
 
     for (const block of piece.blocks) {
       const worldPos = addVector3(piece.position, block);
       const renderPos = gridToWorld(worldPos);
 
-      const wireframe = new THREE.LineSegments(edgesGeometry, material);
+      const wireframe = this.getWireframe(material);
       wireframe.position.set(renderPos.x, renderPos.y, renderPos.z);
 
       this.scene.add(wireframe);
       this.currentPieceWireframes.push(wireframe);
     }
 
-    boxGeometry.dispose();
+    this.needsRender = true;
   }
 
   updateOccupiedBlocks(well: GameWell): void {
-    // Remove blocks that no longer exist
+    // Return removed blocks to pool for reuse
     const currentKeys = new Set(well.occupiedCells.keys());
+    let hasChanges = false;
 
     this.occupiedBlockWireframes.forEach((wireframe, key) => {
       if (!currentKeys.has(key)) {
-        this.scene.remove(wireframe);
-        wireframe.geometry.dispose();
-        if (wireframe.material instanceof THREE.Material) {
-          wireframe.material.dispose();
-        }
+        this.returnToPool(wireframe);
         this.occupiedBlockWireframes.delete(key);
+        hasChanges = true;
       }
     });
 
-    // Add new blocks as wireframes
+    // Add new blocks using cached geometry, material, and pooled wireframes
     well.occupiedCells.forEach((color, key) => {
       if (!this.occupiedBlockWireframes.has(key)) {
         const pos = keyToBlock(key);
         const renderPos = gridToWorld(pos);
+        const material = this.getMaterial(color);
 
-        const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
-        const edgesGeometry = new THREE.EdgesGeometry(boxGeometry);
-        const material = new THREE.LineBasicMaterial({ color });
-
-        const wireframe = new THREE.LineSegments(edgesGeometry, material);
+        const wireframe = this.getWireframe(material);
         wireframe.position.set(renderPos.x, renderPos.y, renderPos.z);
 
         this.scene.add(wireframe);
         this.occupiedBlockWireframes.set(key, wireframe);
-
-        boxGeometry.dispose();
-        edgesGeometry.dispose();
+        hasChanges = true;
       }
     });
+
+    if (hasChanges) {
+      this.needsRender = true;
+    }
   }
 }

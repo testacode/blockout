@@ -14,6 +14,9 @@ export class GameUI {
   private gameOverElement: HTMLElement;
   private game: Game | null = null;
 
+  // Memoization for next piece preview (avoid DOM recreation each frame)
+  private lastNextPieceKey: string | null = null;
+
   constructor() {
     // Create game wrapper to contain both canvas and UI
     this.wrapper = document.createElement('div');
@@ -103,14 +106,34 @@ export class GameUI {
     return overlay;
   }
 
+  // Generate a unique key for a piece (for memoization)
+  private getPieceKey(piece: Piece3D | null): string | null {
+    if (!piece) return null;
+    // Key based on color and block positions (sorted for consistency)
+    const blocksKey = piece.blocks
+      .map((b) => `${b.x},${b.y},${b.z}`)
+      .sort()
+      .join('|');
+    return `${piece.color}:${blocksKey}`;
+  }
+
   private renderNextPiece(piece: Piece3D | null): void {
     const previewContainer = document.getElementById('next-piece-preview');
     if (!previewContainer) {
       return;
     }
 
-    // Clear previous preview
-    previewContainer.innerHTML = '';
+    // Memoization: skip if piece hasn't changed
+    const pieceKey = this.getPieceKey(piece);
+    if (pieceKey === this.lastNextPieceKey) {
+      return;
+    }
+    this.lastNextPieceKey = pieceKey;
+
+    // Clear previous preview using safe DOM method
+    while (previewContainer.firstChild) {
+      previewContainer.removeChild(previewContainer.firstChild);
+    }
 
     if (!piece) {
       return;

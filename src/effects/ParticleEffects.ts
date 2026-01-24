@@ -19,6 +19,23 @@ export class ParticleEffects {
     this.scene = scene;
   }
 
+  // Check if there are active particle effects (for dirty flag rendering)
+  hasActiveEffects(): boolean {
+    return this.activeSystems.length > 0;
+  }
+
+  // Clean up all active particle systems
+  dispose(): void {
+    for (const system of this.activeSystems) {
+      this.scene.remove(system.points);
+      system.points.geometry.dispose();
+      if (system.points.material instanceof THREE.Material) {
+        system.points.material.dispose();
+      }
+    }
+    this.activeSystems = [];
+  }
+
   // Spawn particles when a layer is cleared
   spawnLineClearEffect(y: number): void {
     const particleCount = 100; // Total particles for the effect

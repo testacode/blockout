@@ -117,7 +117,8 @@ export class Game {
 
     // Check if it's time to drop the piece
     if (this.fallTimer >= this.state.fallSpeed) {
-      this.fallTimer = 0;
+      // Subtract instead of reset to preserve overflow time for consistent timing
+      this.fallTimer -= this.state.fallSpeed;
 
       // Try to move piece down
       const downOffset: Vector3 = { x: 0, y: -1, z: 0 };
@@ -168,6 +169,7 @@ export class Game {
     }
     this.controls.disable();
     this.gameUI.dispose();
+    this.audioManager.dispose();
     this.renderer.dispose();
   }
 
@@ -328,27 +330,44 @@ export class Game {
   private dropBlocksAbove(clearedLayers: number[]): void {
     const wellData = this.well.getWellData();
 
-    // Sort layers from bottom to top for proper dropping
+    // Sort layers from bottom to top
     const sortedLayers = [...clearedLayers].sort((a, b) => a - b);
 
-    // For each cleared layer, drop all blocks above it
-    for (const clearedY of sortedLayers) {
-      // Scan from cleared layer upward
-      for (let y = clearedY + 1; y < wellData.height; y++) {
-        for (let x = 0; x < wellData.width; x++) {
-          for (let z = 0; z < wellData.depth; z++) {
-            const key = `${x},${y},${z}`;
-            const color = wellData.occupiedCells.get(key);
+    // Collect all blocks that need to drop and their drop distances
+    // O(occupiedBlocks) instead of O(grid)
+    const blocksToMove: Array<{ x: number; y: number; z: number; color: string; dropBy: number }> =
+      [];
 
-            if (color) {
-              // Remove block from current position
-              this.well.removeBlock(x, y, z);
-              // Add block one position down
-              this.well.addBlock(x, y - 1, z, color);
-            }
-          }
+    for (const [key, color] of wellData.occupiedCells) {
+      const [xStr, yStr, zStr] = key.split(',');
+      const y = parseInt(yStr, 10);
+
+      // Count how many cleared layers are below this block
+      let dropBy = 0;
+      for (const clearedY of sortedLayers) {
+        if (clearedY < y) {
+          dropBy++;
         }
       }
+
+      if (dropBy > 0) {
+        blocksToMove.push({
+          x: parseInt(xStr, 10),
+          y,
+          z: parseInt(zStr, 10),
+          color,
+          dropBy,
+        });
+      }
+    }
+
+    // Sort by Y ascending so we process bottom blocks first (avoids overwrites)
+    blocksToMove.sort((a, b) => a.y - b.y);
+
+    // Move blocks
+    for (const block of blocksToMove) {
+      this.well.removeBlock(block.x, block.y, block.z);
+      this.well.addBlock(block.x, block.y - block.dropBy, block.z, block.color);
     }
   }
 
