@@ -8,7 +8,7 @@
   "theme_color": "#00ffff",
   "icons": [
     {
-      "src": "/vite.svg",
+      "src": "/tetris-svgrepo-com.svg",
       "sizes": "any",
       "type": "image/svg+xml"
     }
