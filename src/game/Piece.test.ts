@@ -1,18 +1,18 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+import type { PieceType } from './Piece';
 import {
   createPiece,
-  getRandomPieceType,
   createRandomPiece,
+  getRandomPieceType,
   I_PIECE_SHAPE,
-  O_PIECE_SHAPE,
-  T_PIECE_SHAPE,
-  L_PIECE_SHAPE,
   J_PIECE_SHAPE,
-  S_PIECE_SHAPE,
-  Z_PIECE_SHAPE,
+  L_PIECE_SHAPE,
   L_TRIMINO_SHAPE,
+  O_PIECE_SHAPE,
+  S_PIECE_SHAPE,
+  T_PIECE_SHAPE,
+  Z_PIECE_SHAPE,
 } from './Piece';
-import type { PieceType } from './Piece';
 
 describe('Piece Shapes', () => {
   describe('I_PIECE_SHAPE', () => {

@@ -1,12 +1,12 @@
+import { AudioManager } from '../audio/AudioManager';
+import type { GameState, Vector3 } from '../types';
+import { GameUI } from '../ui/GameUI';
+import { addVector3, wouldCollide } from '../utils/collision';
+import { rotateBlocks } from '../utils/rotation';
+import { Controls } from './Controls';
+import { createRandomPiece } from './Piece';
 import { Renderer } from './Renderer';
 import { Well } from './Well';
-import { Controls } from './Controls';
-import { GameUI } from '../ui/GameUI';
-import { AudioManager } from '../audio/AudioManager';
-import { createRandomPiece } from './Piece';
-import { wouldCollide, addVector3 } from '../utils/collision';
-import { rotateBlocks } from '../utils/rotation';
-import type { GameState, Vector3 } from '../types';
 
 // Game - Main game loop and state management
 // Single source of truth for game state

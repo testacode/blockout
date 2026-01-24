@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Controls } from './Controls';
 
 describe('Controls', () => {
@@ -12,10 +12,7 @@ describe('Controls', () => {
     controls.enable();
   });
 
-  const createKeyboardEvent = (
-    key: string,
-    repeat: boolean = false
-  ): KeyboardEvent => {
+  const createKeyboardEvent = (key: string, repeat: boolean = false): KeyboardEvent => {
     return new KeyboardEvent('keydown', { key, repeat, bubbles: true });
   };
 

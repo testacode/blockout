@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
+import type { GameWell, Piece3D, Vector3 } from '../types';
 import { addVector3, checkCollision, wouldCollide } from './collision';
-import type { Piece3D, GameWell, Vector3 } from '../types';
 
 describe('addVector3', () => {
   it('should add two positive vectors correctly', () => {

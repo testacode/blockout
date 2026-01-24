@@ -1,4 +1,4 @@
-import type { Piece3D, GameWell, Vector3 } from '../types';
+import type { GameWell, Piece3D, Vector3 } from '../types';
 
 // Add two Vector3 positions
 export function addVector3(a: Vector3, b: Vector3): Vector3 {

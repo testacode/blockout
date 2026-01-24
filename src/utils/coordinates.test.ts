@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { gridToWorld, blockToKey, keyToBlock } from './coordinates';
+import { describe, expect, it } from 'vitest';
 import type { Vector3 } from '../types';
+import { blockToKey, gridToWorld, keyToBlock } from './coordinates';
 
 describe('gridToWorld', () => {
   it('should add 0.5 to each coordinate', () => {

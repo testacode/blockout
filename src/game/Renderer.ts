@@ -1,8 +1,8 @@
 import * as THREE from 'three';
 import { ParticleEffects } from '../effects/ParticleEffects';
-import { gridToWorld, keyToBlock } from '../utils/coordinates';
+import type { GameWell, Piece3D } from '../types';
 import { addVector3 } from '../utils/collision';
-import type { Piece3D, GameWell } from '../types';
+import { gridToWorld, keyToBlock } from '../utils/coordinates';
 
 // Renderer - Three.js scene, camera, and rendering
 // Consumes game state but never modifies it (separation of concerns)

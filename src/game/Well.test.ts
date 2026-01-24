@@ -1,6 +1,6 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { Well } from './Well';
 import * as THREE from 'three';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { Well } from './Well';
 
 // Mock Three.js scene
 vi.mock('three', async () => {

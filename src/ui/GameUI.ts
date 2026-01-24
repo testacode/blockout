@@ -1,8 +1,8 @@
 // GameUI - Display game stats and information
 // Updates from GameState
 
-import type { GameState, Piece3D } from '../types';
 import type { Game } from '../game/Game';
+import type { GameState, Piece3D } from '../types';
 
 export class GameUI {
   private wrapper: HTMLElement;

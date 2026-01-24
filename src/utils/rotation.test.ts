@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest';
-import { rotateAroundX, rotateAroundY, rotateAroundZ, rotateBlocks } from './rotation';
+import { describe, expect, it } from 'vitest';
 import type { Vector3 } from '../types';
+import { rotateAroundX, rotateAroundY, rotateAroundZ, rotateBlocks } from './rotation';
 
 describe('rotateAroundX', () => {
   it('should rotate 90 degrees around X-axis', () => {

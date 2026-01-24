@@ -1,0 +1,16 @@
+{
+  "name": "Blockout - 3D Tetris Game",
+  "short_name": "Blockout",
+  "description": "A challenging 3D Tetris game where you stack blocks in a three-dimensional well. Play free online!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#00ffff",
+  "icons": [
+    {
+      "src": "/vite.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
