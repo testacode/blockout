@@ -5,11 +5,13 @@ import { Well } from './Well';
 // Mock Three.js scene
 vi.mock('three', async () => {
   const actual = await vi.importActual<typeof THREE>('three');
+  // Vitest 4 requires explicit `function` for mocked constructors
+  const MockScene = vi.fn(function (this: { add: () => void }) {
+    this.add = vi.fn();
+  } as unknown as () => void);
   return {
     ...actual,
-    Scene: vi.fn().mockImplementation(() => ({
-      add: vi.fn(),
-    })),
+    Scene: MockScene,
   };
 });
 

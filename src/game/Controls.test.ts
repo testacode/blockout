@@ -1,13 +1,13 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { Controls } from './Controls';
+import { type ActionHandler, Controls } from './Controls';
 
 describe('Controls', () => {
   let controls: Controls;
-  let actionHandler: ReturnType<typeof vi.fn>;
+  let actionHandler: ReturnType<typeof vi.fn<ActionHandler>>;
 
   beforeEach(() => {
     controls = new Controls();
-    actionHandler = vi.fn();
+    actionHandler = vi.fn<ActionHandler>();
     controls.setActionHandler(actionHandler);
     controls.enable();
   });

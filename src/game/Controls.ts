@@ -8,7 +8,7 @@ type ControlAction =
   | { type: 'pause' }
   | { type: 'restart' };
 
-type ActionHandler = (action: ControlAction) => void;
+export type ActionHandler = (action: ControlAction) => void;
 
 export class Controls {
   private actionHandler: ActionHandler | null = null;
