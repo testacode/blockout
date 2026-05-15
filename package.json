@@ -20,15 +20,15 @@
     "check": "tsc && biome check ."
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.2.5",
-    "@types/three": "^0.180.0",
-    "@vitest/ui": "^3.2.4",
-    "happy-dom": "^20.3.7",
+    "@biomejs/biome": "^2.4.15",
+    "@types/three": "^0.184.1",
+    "@vitest/ui": "^4.1.6",
+    "happy-dom": "^20.9.0",
     "typescript": "~5.9.3",
-    "vite": "^7.1.7",
-    "vitest": "^3.2.4"
+    "vite": "^8.0.12",
+    "vitest": "^4.1.6"
   },
   "dependencies": {
-    "three": "^0.180.0"
+    "three": "^0.184.0"
   }
 }
